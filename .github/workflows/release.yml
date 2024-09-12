@@ -1,0 +1,40 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+      contents: write
+      issues: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Setup ⚡
+        uses: actions/setup-node@v3
+        with:
+          node-version: "20"
+
+      - name: Install 📚
+        run: |
+          npm pkg delete scripts.prepare
+          yarn
+          npm pkg set scripts.prepare="npx husky"
+
+      - name: Semantic Release 💥
+        run: npx semantic-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
