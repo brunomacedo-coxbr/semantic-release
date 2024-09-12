@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
+    "commit": "git-cz",
     "prepare": "npx husky"
   },
   "commitlint": {
@@ -10,14 +11,22 @@
       "@commitlint/config-conventional"
     ]
   },
+  "config": {
+    "commitizen": {
+      "path": "@commitlint/cz-commitlint"
+    }
+  },
   "devDependencies": {
     "@commitlint/cli": "^19.3.0",
     "@commitlint/config-conventional": "^19.2.2",
+    "@commitlint/cz-commitlint": "^19.5.0",
     "@semantic-release/changelog": "^6.0.3",
     "@semantic-release/git": "^10.0.1",
     "@semantic-release/github": "^10.3.3",
     "@semantic-release/release-notes-generator": "^14.0.1",
+    "commitizen": "^4.3.0",
     "husky": "^9.0.11",
+    "inquirer": "9",
     "semantic-release": "^24.1.1"
   }
 }
