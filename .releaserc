@@ -30,6 +30,17 @@
       }
     ],
     "@semantic-release/git",
-    "@semantic-release/github"
+    [
+      "@semantic-release/github",
+      {
+        "draftRelease": true,
+        "assets": [
+          {
+            "path": "src/**",
+            "label": "JS distribution"
+          }
+        ]
+      }
+    ]
   ]
 }

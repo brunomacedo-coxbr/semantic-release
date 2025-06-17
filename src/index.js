@@ -1,5 +1,5 @@
 /**
- * Function to generate a random password
+ * Function to generate a random PASSWORD
  */
 export function generateRandomPassword(length = 12) {
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+[]{}|;:,.<>?";

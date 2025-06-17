@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "commit": "git-cz",
-    "prepare": "npx husky"
+    "prepare": "yarn husky"
   },
   "commitlint": {
     "extends": [

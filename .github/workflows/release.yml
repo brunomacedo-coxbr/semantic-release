@@ -30,9 +30,7 @@ jobs:
 
       - name: Install 📚
         run: |
-          npm pkg delete scripts.prepare
           yarn
-          npm pkg set scripts.prepare="npx husky"
 
       - name: Semantic Release 💥
         run: npx semantic-release
