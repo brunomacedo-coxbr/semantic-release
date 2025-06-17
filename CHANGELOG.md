@@ -1,3 +1,11 @@
+# [2.1.0](https://github.com/brunomacedo-coxbr/semantic-release/compare/v2.0.0...v2.1.0) (2025-06-17)
+
+
+### Features
+
+* **Release:** build with draft ([8b892b8](https://github.com/brunomacedo-coxbr/semantic-release/commit/8b892b81b4feea5daaa45c944645bf0cef303d3b))
+* **Release:** build with draft ([141a9d1](https://github.com/brunomacedo-coxbr/semantic-release/commit/141a9d11bb1ebdd5ab04e4759baba6b2c1c1f7f5))
+
 # [2.0.0](https://github.com/brunomacedo-coxbr/semantic-release/compare/v1.0.0...v2.0.0) (2024-09-12)
 
 
