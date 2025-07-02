@@ -2,8 +2,13 @@
   "name": "semantic-release",
   "version": "0.0.1",
   "private": true,
+  "files": [
+    "dist/**",
+    "package.json"
+  ],
   "scripts": {
     "commit": "git-cz",
+    "build": "tsc",
     "prepare": "yarn husky"
   },
   "commitlint": {
@@ -21,12 +26,14 @@
     "@commitlint/config-conventional": "^19.2.2",
     "@commitlint/cz-commitlint": "^19.5.0",
     "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/exec": "^7.1.0",
     "@semantic-release/git": "^10.0.1",
     "@semantic-release/github": "^10.3.3",
     "@semantic-release/release-notes-generator": "^14.0.1",
     "commitizen": "^4.3.0",
     "husky": "^9.0.11",
     "inquirer": "9",
-    "semantic-release": "^24.1.1"
+    "semantic-release": "^24.1.1",
+    "typescript": "^5.8.3"
   }
 }
