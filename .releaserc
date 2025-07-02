@@ -40,7 +40,7 @@
         "draftRelease": true,
         "assets": [
           {
-            "path": "src/**",
+            "path": "dist/**",
             "label": "JS distribution"
           }
         ]
