@@ -33,6 +33,11 @@ jobs:
         env:
           HUSKY: 0
 
+      - name: Build 📚
+        run: yarn build
+        env:
+          HUSKY: 0
+
       - name: Semantic Release 💥
         run: npx semantic-release
         env:
