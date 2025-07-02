@@ -1,3 +1,16 @@
+# [2.2.0](https://github.com/brunomacedo-coxbr/semantic-release/compare/v2.1.0...v2.2.0) (2025-07-02)
+
+
+### Bug Fixes
+
+* **Build:** remove semantic exec ([7acad84](https://github.com/brunomacedo-coxbr/semantic-release/commit/7acad847943454e5b1ebb26a57bc004138e2d5c9))
+* **Build:** retry with dist folder ([8f68cca](https://github.com/brunomacedo-coxbr/semantic-release/commit/8f68cca7e05547b5e0f2180186e28c5d48f55bf6))
+
+
+### Features
+
+* **Build:** package exports ([847cceb](https://github.com/brunomacedo-coxbr/semantic-release/commit/847ccebbcc523344e093cc4ae46213c9519273c1))
+
 # [2.1.0](https://github.com/brunomacedo-coxbr/semantic-release/compare/v2.0.0...v2.1.0) (2025-06-17)
 
 
