@@ -29,10 +29,6 @@
         "changelogFile": "CHANGELOG.md"
       }
     ],
-    {
-      "path": "@semantic-release/exec",
-      "cmd": "yarn build"
-    },
     "@semantic-release/git",
     [
       "@semantic-release/github",
