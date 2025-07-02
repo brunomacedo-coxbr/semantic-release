@@ -1,3 +1,10 @@
+## [2.2.1](https://github.com/brunomacedo-coxbr/semantic-release/compare/v2.2.0...v2.2.1) (2025-07-02)
+
+
+### Bug Fixes
+
+* **Build:** setup in github actions ([49c6921](https://github.com/brunomacedo-coxbr/semantic-release/commit/49c6921087cd21f8106f38590accc340420592e0))
+
 # [2.2.0](https://github.com/brunomacedo-coxbr/semantic-release/compare/v2.1.0...v2.2.0) (2025-07-02)
 
 
