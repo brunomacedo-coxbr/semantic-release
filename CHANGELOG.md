@@ -1,3 +1,11 @@
+# [2.5.0](https://github.com/brunomacedo-coxbr/semantic-release/compare/v2.4.0...v2.5.0) (2025-08-25)
+
+
+### Features
+
+* **Build:** replace package manager ([4c2dda8](https://github.com/brunomacedo-coxbr/semantic-release/commit/4c2dda8a9c8ddfa62ed03de4e95d5a8832811892))
+* **Build:** workspace ([35baf85](https://github.com/brunomacedo-coxbr/semantic-release/commit/35baf856874eb33103de43a5975e2a29f32bced0))
+
 # [2.4.0](https://github.com/brunomacedo-coxbr/semantic-release/compare/v2.3.0...v2.4.0) (2025-08-25)
 
 
