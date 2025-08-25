@@ -23,18 +23,21 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup ⚡
+      - name: Setup 🚩
         uses: actions/setup-node@v3
         with:
           node-version-file: '.nvmrc'
 
-      - name: Install 📚
-        run: yarn
+      - name: Setup pnpm 🔧
+        uses: pnpm/action-setup@v4
+
+      - name: Install 🎒
+        run: pnpm install --prefer-offline --frozen-lockfile
         env:
           HUSKY: 0
 
       - name: Build 📚
-        run: yarn build
+        run: pnpm build
         env:
           HUSKY: 0
 
