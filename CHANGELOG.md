@@ -1,3 +1,10 @@
+## [2.5.3](https://github.com/brunomacedo-coxbr/semantic-release/compare/v2.5.2...v2.5.3) (2025-08-25)
+
+
+### Bug Fixes
+
+* **Build:** add files ([fe73495](https://github.com/brunomacedo-coxbr/semantic-release/commit/fe73495ff2964ff49e7bc00e0c818ba663fa0cd0))
+
 ## [2.5.2](https://github.com/brunomacedo-coxbr/semantic-release/compare/v2.5.1...v2.5.2) (2025-08-25)
 
 
