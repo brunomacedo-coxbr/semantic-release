@@ -1,3 +1,10 @@
+# [2.3.0](https://github.com/brunomacedo-coxbr/semantic-release/compare/v2.2.2...v2.3.0) (2025-08-25)
+
+
+### Features
+
+* **Deploy:** with tarbal ([c2f0e36](https://github.com/brunomacedo-coxbr/semantic-release/commit/c2f0e36ce5fe169e5a25fa7d5b97a8525a19076d))
+
 ## [2.2.2](https://github.com/brunomacedo-coxbr/semantic-release/compare/v2.2.1...v2.2.2) (2025-08-25)
 
 
