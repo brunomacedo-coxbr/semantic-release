@@ -1,3 +1,10 @@
+# [2.4.0](https://github.com/brunomacedo-coxbr/semantic-release/compare/v2.3.0...v2.4.0) (2025-08-25)
+
+
+### Features
+
+* **Deploy:** distribution ([e56c508](https://github.com/brunomacedo-coxbr/semantic-release/commit/e56c508a4c5e0cdc80bd29c48b0d9de15417314d))
+
 # [2.3.0](https://github.com/brunomacedo-coxbr/semantic-release/compare/v2.2.2...v2.3.0) (2025-08-25)
 
 
