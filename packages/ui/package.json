@@ -16,7 +16,7 @@
     "./styles.css": "./dist/styles.css"
   },
   "scripts": {
-    "postversion": "cp ../../README.md && cp ../../CHANGELOG.md && npm pkg delete devDependencies scripts",
+    "postversion": "cp -r ../../README.md .. && cp -r ../../CHANGELOG.md .. && npm pkg delete devDependencies scripts",
     "build:assets": "cp ../../config/tailwind-config/colors.css ./dist/colors.css && rm -rf ./dist/themes && cp -R ./src/themes ./dist/themes",
     "build:tailwind": "tailwindcss -i ./src/styles.css -o ./dist/styles.css",
     "build": "tsup && pnpm build:assets && pnpm build:tailwind",
