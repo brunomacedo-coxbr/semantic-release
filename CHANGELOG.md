@@ -1,3 +1,10 @@
+## [2.2.2](https://github.com/brunomacedo-coxbr/semantic-release/compare/v2.2.1...v2.2.2) (2025-08-25)
+
+
+### Bug Fixes
+
+* **Release:** create artifact ([1a97788](https://github.com/brunomacedo-coxbr/semantic-release/commit/1a97788e387fc54d6e0d683577af583fd25e2bb7))
+
 ## [2.2.1](https://github.com/brunomacedo-coxbr/semantic-release/compare/v2.2.0...v2.2.1) (2025-07-02)
 
 
