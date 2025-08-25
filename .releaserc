@@ -41,7 +41,12 @@
       "@semantic-release/github",
       {
         "draftRelease": true,
-        "assets": "dist/*.tgz"
+        "assets": [
+          {
+            "path": "dist/*.tgz",
+            "label": "Distribution"
+          }
+        ]
       }
     ]
   ]
