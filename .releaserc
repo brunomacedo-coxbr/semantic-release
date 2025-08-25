@@ -31,15 +31,17 @@
     ],
     "@semantic-release/git",
     [
+      "@semantic-release/npm",
+      {
+        "npmPublish": false,
+        "tarballDir": "dist"
+      }
+    ],
+    [
       "@semantic-release/github",
       {
         "draftRelease": true,
-        "assets": [
-          {
-            "path": "dist/",
-            "label": "JS distribution"
-          }
-        ]
+        "assets": "dist/*.tgz"
       }
     ]
   ]
