@@ -1,0 +1,10 @@
+{
+  "*.{md,mdx,css,json,html}": [
+    "npx prettier --write"
+  ],
+  "*.{js,jsx,ts,tsx,cjs,mjs}": [
+    "npx prettier --write",
+    "pnpm lint -- --fix",
+    "pnpm test --passWithNoTests"
+  ]
+}

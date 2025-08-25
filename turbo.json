@@ -1,0 +1,27 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "concurrency": "11",
+  "globalEnv": ["VITE_STAGE"],
+  "tasks": {
+    "build": {
+      "outputs": ["dist/**"],
+      "dependsOn": ["^build"]
+    },
+    "lint": {
+      "inputs": ["config/eslint-config/**/*"],
+      "cache": false,
+      "dependsOn": ["^lint"]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true,
+      "dependsOn": ["@design-system/ui#build"]
+    },
+    "test": {
+      "inputs": ["**/*.test.tsx", "**/*.test.ts"],
+      "outputs": ["coverage/**"],
+      "cache": false,
+      "dependsOn": ["^test", "@design-system/ui#build"]
+    }
+  }
+}

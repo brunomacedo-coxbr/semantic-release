@@ -1,0 +1,94 @@
+@import "../../../config/tailwind-config/globals.css";
+@import "tw-animate-css";
+@import "./themes/default.css";
+
+@theme inline {
+  --color-dark-primary: var(--dark-primary);
+  --color-dark-primary-foreground: var(--dark-primary-foreground);
+  --color-invert-background: var(--invert-background);
+  --color-background: var(--background);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-border: var(--border);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-light-text: var(--light-text);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-destructive: var(--destructive);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-bubble-1: var(--bubble-1);
+  --color-bubble-2: var(--bubble-2);
+  --color-bubble-3: var(--bubble-3);
+  --color-bubble-4: var(--bubble-4);
+  --color-spinner-1: var(--spinner-1);
+  --color-spinner-2: var(--spinner-2);
+  --color-spinner-3: var(--spinner-3);
+  --color-spinner-4: var(--spinner-4);
+  --color-background-selector: var(--background-selector);
+  --color-background-selector-disabled: var(--background-selector-disabled);
+  --color-background-selector-default: var(--background-selector-default);
+  --color-background-circle-radio-button: var(--background-circle-radio-button);
+  --color-background-border-radio-button: var(--background-border-radio-button);
+  --color-background-radio-button: var(--background-radio-button);
+  --color-background-alert: var(--background-alert);
+  --color-border-alert: var(--border-alert);
+
+  --color-ghost-bg: var(--color-ghost-bg);
+  --color-ghost-fill: var(--color-ghost-fill);
+  --color-ghost-border: var(--color-ghost-border);
+  --color-filled-bg: var(--color-filled-bg);
+  --color-filled-fill: var(--color-filled-fill);
+  --color-alert-bg: var(--color-alert-bg);
+  --color-alert-fill: var(--color-alert-fill);
+  --color-outline-bg: var(--color-outline-bg);
+  --color-outline-fill: var(--color-outline-fill);
+  --color-outline-border: var(--color-outline-border);
+
+  --animate-bubble-rotate: bubble-rotate 2s linear infinite;
+  @keyframes bubble-rotate {
+    0% {
+      transform: translateX(-3px) scale(0);
+    }
+    10% {
+      transform: translateX(-3px) scale(0.5);
+    }
+    40% {
+      transform: translateX(12px) scale(1);
+    }
+    70% {
+      transform: translateX(32px) scale(1);
+    }
+    90% {
+      transform: translateX(39px) scale(0.5);
+    }
+    100% {
+      transform: translateX(42px) scale(0);
+    }
+  }
+
+  --animate-circle-spinner: circle-spinner 2s steps(12, end) infinite;
+  @keyframes circle-spinner {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+}
+
+@layer base {
+  * {
+    @apply cx:border-border cx:outline-ring/30;
+  }
+  body {
+    @apply cx:bg-background cx:text-foreground;
+  }
+  [role="button"],
+  button {
+    @apply cx:cursor-pointer;
+  }
+}

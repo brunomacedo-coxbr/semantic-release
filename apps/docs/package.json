@@ -1,0 +1,19 @@
+{
+  "name": "@design-system/docs",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "storybook dev -p 5170",
+    "build": "storybook build --output-dir dist",
+    "preview-storybook": "pnpm build && npx http-serve dist"
+  },
+  "dependencies": {
+    "@design-system/tailwind-config": "workspace:*",
+    "@design-system/ui": "workspace:*"
+  },
+  "devDependencies": {
+    "@design-system/eslint-config": "workspace:*",
+    "@design-system/typescript-config": "workspace:*"
+  }
+}

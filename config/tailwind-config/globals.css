@@ -1,0 +1,21 @@
+@import "tailwindcss" prefix(cx);
+
+/**
+ * ⚠️ IMPORTANT
+ * You should import one of the available themes in your project.
+ */
+@import "./colors.css";
+
+/**
+ * ⚠️ WARNING
+ * This file defines global CSS variables and utilities
+ * that will affect every project importing it.
+ * Do not add or override global styles here unless you fully understand
+ * the impact on downstream applications.
+ */
+@theme {
+  --breakpoint-xs: 30rem;
+  --font-sans: "Open Sans", "sans-serif";
+}
+
+@custom-variant dark (&:is(.theme-dark-mode *));

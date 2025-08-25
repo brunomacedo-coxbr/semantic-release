@@ -1,0 +1,111 @@
+<style>
+  div#root {
+    div.css-17k9ygk {
+      border-right: none;
+    }
+    div[data-test-id="sb-preview-toolbar"] {
+      span.css-1vsmsb1 {
+        display: none;
+      }
+    }
+  }
+
+  #components {
+    font-weight: bold;
+  }
+
+  .sidebar-container {
+    background: #fff !important;
+
+    #storybook-explorer-tree {
+      .sidebar-subheading {
+        text-transform: none;
+        letter-spacing: normal;
+        font-size: 14px;
+        font-weight: normal;
+        padding-block: 10px;
+        margin: 0;
+
+        [aria-label] {
+          display: none;
+        }
+      }
+    }
+
+    .css-c6oct8 {
+      svg {
+        color: #1f3e74 !important;
+      }
+    }
+
+    mark {
+      color: #7399b1;
+    }
+
+    .sidebar-item svg[type],
+    .search-result-item svg[type] {
+      display: none;
+    }
+
+    .sidebar-item[data-nodetype] {
+      &[data-parent-id] {
+        a,
+        button {
+          padding-left: 40px;
+        }
+        button[aria-expanded] {
+          padding-left: 26px;
+
+          * {
+            box-shadow: none;
+          }
+
+          .css-nze13p,
+          .css-1kh6u6t {
+            margin-right: 15px;
+          }
+        }
+        .css-xwriep {
+          padding-left: 58px;
+        }
+      }
+
+      a {
+        gap: 0;
+      }
+
+      a,
+      button {
+        padding-block: 15px;
+
+        &[href="#storybook-preview-wrapper"] {
+          display: none;
+        }
+      }
+
+      button[aria-controls] {
+        align-items: center;
+      }
+    }
+
+    .sidebar-header {
+      padding-left: 0px;
+      :nth-child(2) {
+        margin-right: 0px;
+      }
+      a {
+        padding: 15px;
+
+        img {
+          width: 100% !important;
+          max-width: 240px !important;
+        }
+      }
+
+      div:has(button[aria-label="Shortcuts"]),
+      button[aria-label="Shortcuts"] {
+        display: none;
+      }
+    }
+  }
+</style>

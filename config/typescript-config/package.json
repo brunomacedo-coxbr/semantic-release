@@ -1,0 +1,6 @@
+{
+  "name": "@design-system/typescript-config",
+  "publishConfig": {
+    "access": "public"
+  }
+}

@@ -1,0 +1,10 @@
+/** Shadcn Variables */
+:root {
+  --background: oklch(0.97 0 0);
+  --accent: oklch(0.97 0 0);
+}
+
+.theme-dark-mode {
+  --background: oklch(21% 0.034 264.665);
+  --accent: oklch(0.371 0 0);
+}

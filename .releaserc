@@ -34,7 +34,8 @@
       "@semantic-release/npm",
       {
         "npmPublish": false,
-        "tarballDir": "dist"
+        "tarballDir": "packages/ui/dist",
+        "pkgRoot": "packages/ui"
       }
     ],
     [
@@ -43,7 +44,7 @@
         "draftRelease": true,
         "assets": [
           {
-            "path": "dist/*.tgz",
+            "path": "packages/ui/dist/*.tgz",
             "label": "Distribution"
           }
         ]

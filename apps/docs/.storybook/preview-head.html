@@ -1,0 +1,318 @@
+<link
+  href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap"
+  rel="stylesheet"
+/>
+
+<style>
+  html,
+  body.sb-show-main,
+  #storybook-root,
+  #decorator-demo-preview {
+    height: 100%;
+  }
+
+  #decorator-demo-preview {
+    background-color: var(--background);
+    position: relative;
+    padding-top: 45px;
+
+    .theme-toolbar {
+      top: 0;
+      left: 0;
+      width: 100%;
+      position: absolute;
+      display: flex;
+      justify-content: end;
+      align-items: center;
+      padding: 10px 30px;
+      box-sizing: border-box;
+      height: 45px;
+
+      .theme-button {
+        color: var(--foreground);
+        width: 24px;
+        height: 24px;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        border-radius: 24px;
+        border: none;
+        background: none;
+      }
+
+      .theme-button svg {
+        fill: var(--foreground);
+      }
+
+      .theme-select {
+        padding: 3px 25px 3px 8px;
+        cursor: pointer;
+        border: 1px solid var(--border);
+        font-size: 11px;
+        color: var(--foreground);
+        background-color: var(--background);
+        border-radius: 6px;
+        margin-right: 10px;
+        position: relative;
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+
+        background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="15" height="15"%3E%3Cpath d="M512 768l-256-256h512z" fill="%23aaa" /%3E%3C/svg%3E');
+        background-repeat: no-repeat;
+        background-position: right 5px center;
+        background-size: 14px;
+      }
+    }
+
+    .theme-body-preview {
+      padding: 30px;
+    }
+  }
+
+  body.sb-main-padded.sb-show-main {
+    padding: 0;
+  }
+
+  #storybook-docs {
+    .toc-list-item {
+      &.is-active-li > a {
+        color: #00599a;
+      }
+    }
+
+    .theme-body-preview {
+      border-top: 1px solid var(--border);
+    }
+
+    div.sbdocs-preview {
+      background: none;
+
+      .docs-story {
+        .css-xzp052,
+        & > div:has([scale]) {
+          padding: 0;
+        }
+      }
+
+      .innerZoomElementWrapper > div {
+        border: none !important;
+      }
+    }
+
+    div.sbdocs-wrapper {
+      padding: 4rem min(3rem, 6%);
+    }
+
+    div.sbdocs-content {
+      font-size: 16px;
+      color: #313333;
+      line-height: 1.65;
+      font-weight: 400;
+      overflow: hidden;
+
+      > h1 {
+        color: #0b0b0b;
+        font-weight: 700;
+        font-size: 64px;
+      }
+
+      > h2:where(h2:not(.sb-anchor, .sb-unstyled, .sb-unstyled h2)) {
+        border-bottom: none;
+        font-weight: 700;
+        color: #0b0b0b;
+        margin-top: 20px;
+      }
+
+      > h3:where(h3:not(.sb-anchor, .sb-unstyled, .sb-unstyled h3)) {
+        margin: 0;
+      }
+
+      > p {
+        &:where(p:not(.sb-anchor, .sb-unstyled, .sb-unstyled p)) {
+          font-size: 16px;
+          color: #313333;
+          line-height: 1.65;
+          font-weight: 400;
+        }
+        > img {
+          width: 100%;
+          border-radius: 24px;
+        }
+      }
+
+      strong {
+        font-weight: 600;
+      }
+
+      .subheading {
+        font-weight: 900;
+        font-size: 14px;
+        color: #999;
+        letter-spacing: 1px;
+        margin-bottom: 12px;
+        margin-top: 40px;
+      }
+
+      .link-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        grid-template-rows: auto;
+        gap: 20px;
+
+        .sb-button-action {
+          height: 90px;
+        }
+      }
+
+      .tip {
+        display: inline-block;
+        border-radius: 1em;
+        font-size: 11px;
+        line-height: 12px;
+        font-weight: 700;
+        background: #e7fdd8;
+        color: #66bf3c;
+        padding: 4px 12px;
+        margin-right: 10px;
+        vertical-align: top;
+      }
+
+      .tip-wrapper {
+        font-size: 13px;
+        line-height: 20px;
+        margin-top: 40px;
+        margin-bottom: 40px;
+      }
+
+      .tip-wrapper code {
+        font-size: 12px;
+        display: inline-block;
+      }
+
+      .sb-button-action,
+      .link-list a {
+        color: #00599a;
+        border: 1px solid #cdcece;
+        display: inline-flex;
+        border-radius: 6px;
+        padding: 8px 12px;
+        gap: 5px;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 14px;
+        line-height: 1.3;
+        transition:
+          background 150ms ease-out,
+          border 150ms ease-out,
+          transform 150ms ease-out;
+
+        .sb-button-icon {
+          font-size: 20px;
+        }
+
+        .sb-img-rounded {
+          border-radius: 5px;
+        }
+
+        img {
+          width: 100%;
+          max-width: 24px;
+        }
+
+        &:hover {
+          border-color: #7a7a7a;
+          transform: translate3d(0, -3px, 0);
+          box-shadow: rgba(0, 0, 0, 0.08) 0 3px 10px 0;
+        }
+
+        p {
+          padding: 0;
+          margin: 0;
+          line-height: 1;
+          font-size: 14px;
+          font-weight: 600;
+          color: #00599a;
+          align-items: center;
+          display: inline-flex;
+        }
+      }
+
+      .color-swatch-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+      }
+
+      .color-swatch {
+        cursor: pointer;
+        position: relative;
+        border-radius: 6px;
+        border: 1px solid #ddd;
+        overflow: hidden;
+        text-align: left;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      }
+
+      .color-box {
+        height: 80px;
+      }
+
+      .color-description {
+        padding: 0.75rem;
+        background: #fff;
+        line-height: 1.3;
+      }
+
+      .color-label {
+        font-size: 0.75rem;
+        color: #333;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+      }
+
+      .color-code {
+        font-size: 0.65rem;
+        color: #777;
+        font-family: monospace;
+      }
+
+      .copied-tooltip {
+        bottom: 80px;
+        left: 50%;
+        position: absolute;
+        transform: translateX(-50%);
+        background: #222;
+        color: #fff;
+        padding: 2px 6px;
+        font-size: 10px;
+        border-radius: 4px;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+      }
+
+      .color-swatch.copied .copied-tooltip {
+        opacity: 1;
+      }
+    }
+  }
+</style>
+
+<script>
+  function copyToClipboard(text, event) {
+    navigator.clipboard.writeText(text);
+
+    const el = event.currentTarget;
+
+    el.classList.add("copied");
+    setTimeout(() => {
+      el.classList.remove("copied");
+    }, 1500);
+  }
+</script>

@@ -1,0 +1,11 @@
+packages:
+  - apps/*
+  - packages/*
+  - config/*
+
+onlyBuiltDependencies:
+  - '@parcel/watcher'
+  - '@tailwindcss/oxide'
+  - core-js-pure
+  - esbuild
+  - unrs-resolver

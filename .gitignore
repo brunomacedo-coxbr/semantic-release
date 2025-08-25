@@ -1,56 +1,104 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-# dependencies
-/node_modules
-/.pnp
+# Terraform
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
+crash.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraformrc
+terraform.rc
+
+# Terragrunt
+*.terragrunt-cache/
+
+# Node.js
+.pnp
 .pnp.js
-.yarn/install-state.gz
-
-# testing
-/coverage
-
-# next.js
-/.next/
-/out/
-/dist/
-log*.txt
-
-# production
-/build
-
-# misc
-.DS_Store
-*.pem
-
-# debug
+.cache
+node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
+/dist
+/build
+.cache/
+*.env
 
-# local env files
-.env*.local
+# Turbo
+.turbo
 
-# vercel
+# Vercel
 .vercel
 
-# typescript
+# Build Outputs
+.next/
+out/
+build
+dist
+dist-ssr
+server/dist
+public/dist
 *.tsbuildinfo
-next-env.d.ts
+storybook-static
+*.tgz
 
-# Public Data
-public/public-data/*
-!public/public-data/v2.0/models/2024/models.json
-!public/public-data/v2.0/versions/chevrolet/onix/2024/versions.json
-!public/public-data/v2.0/price-advisor/35388/options.json
-!public/public-data/v2.0/price-advisor/35388/technical_data.json
-!public/public-data/v2.0/years.json
-!public/public-data/images/partners/123/price-advisor-card/Mitsubishi.png
-!public/public-data/images/partners/123/price-advisor-card/Tratamento_Pajero_Sport.png
-!public/public-data/images/vehicles/35388/sw4.png
-!public/public-data/images/vehicles/35388/1.jpg
-!public/public-data/images/vehicles/35388/2.jpg
+# React
+.eslintcache
+*.cache/
+*.log
+*.lock
+coverage/
+.DS_Store
+*.pem
 
-# Build Data
-public/build-data/price-advisor/vehicles/*
-!public/build-data/price-advisor/vehicles/35388/*
-!public/build-data/price-advisor/vehicles/partners/*
+# Lerna
+lerna-debug.log
+lerna.json
+
+# .NET
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.vs/
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# Visual Studio
+*.vspx
+*.vspkg
+.vs/
+.vscode/
+*.pidb
+*.opendb
+
+# Visual Studio Code
+.vscode/
+*.code-workspace
+*.code-workspace.backup
+
+# General IDE files
+*.idea/
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+*.bak
+*.orig
+*.rej
+*~

@@ -1,0 +1,14 @@
+@theme {
+  --color-*: initial;
+  --color-authentication-dark-100: #022a3f;
+  --color-authentication-light-100: #f2f6fa;
+  --color-authentication-light-1000: #023b59;
+  --color-authentication-light-200: #e4ecf5;
+  --color-authentication-light-300: #c6d7eb;
+  --color-authentication-light-400: #a1bfe0;
+  --color-authentication-light-500: #72a5d4;
+  --color-authentication-light-600: #038ed8;
+  --color-authentication-light-700: #0477b3;
+  --color-authentication-light-800: #04679b;
+  --color-authentication-light-900: #03547e;
+}
