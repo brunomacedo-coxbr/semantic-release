@@ -1,11 +1,6 @@
 {
   "name": "design-system",
   "private": true,
-  "files": [
-    "packages/ui/dist/**",
-    "README.md",
-    "CHANGELOG.md"
-  ],
   "scripts": {
     "build": "dotenv -- turbo run build",
     "build:ui": "pnpm --filter @design-system/ui build",
