@@ -16,7 +16,7 @@
     "./styles.css": "./dist/styles.css"
   },
   "scripts": {
-    "copy:version": "VERSION=$(npm pkg get version --json | jq -r '.') && echo $VERSION && cd ../../ && npm pkg set version=$VERSION",
+    "copy:version": "echo $(pwd) && VERSION=$(npm pkg get version --json | jq -r '.') && echo $VERSION && cd ../../ && npm pkg set version=$VERSION",
     "copy:docs": "cp -r ../../README.md . && cp -r ../../CHANGELOG.md .",
     "postversion": "pnpm copy:version && pnpm copy:docs && npm pkg delete devDependencies scripts",
     "build:assets": "cp ../../config/tailwind-config/colors.css ./dist/colors.css && rm -rf ./dist/themes && cp -R ./src/themes ./dist/themes",
