@@ -1,3 +1,13 @@
+## [2.5.15](https://github.com/brunomacedo-coxbr/semantic-release/compare/v2.5.14...v2.5.15) (2025-09-02)
+
+
+### Bug Fixes
+
+* **Actions:** multiple pull request ([6e822e8](https://github.com/brunomacedo-coxbr/semantic-release/commit/6e822e875516e9a918784fa11db77961c1f6b60e))
+* **Update:** packages ([bf2afb3](https://github.com/brunomacedo-coxbr/semantic-release/commit/bf2afb3cbcf5fbfdb152a83216d40dbaa9420653))
+* **Storybook:** remove imports ([441bfd2](https://github.com/brunomacedo-coxbr/semantic-release/commit/441bfd2d0a05a2e747f79129e3d07232c3352294))
+* **Storybook:** remove mdx from packages ([0b7c77f](https://github.com/brunomacedo-coxbr/semantic-release/commit/0b7c77fb4d6eadbcfea887769d1ab946e099d0c4))
+
 ## [2.5.14](https://github.com/brunomacedo-coxbr/semantic-release/compare/v2.5.13...v2.5.14) (2025-09-02)
 
 
