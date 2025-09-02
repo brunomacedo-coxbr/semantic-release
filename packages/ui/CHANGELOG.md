@@ -1,3 +1,10 @@
+## [2.5.14](https://github.com/brunomacedo-coxbr/semantic-release/compare/v2.5.13...v2.5.14) (2025-09-02)
+
+
+### Bug Fixes
+
+* **Actions:** open pull request ([7fb45e5](https://github.com/brunomacedo-coxbr/semantic-release/commit/7fb45e5a373a8eebd86d2a6024d946f9e0f5e50e))
+
 ## [2.5.13](https://github.com/brunomacedo-coxbr/semantic-release/compare/v2.5.12...v2.5.13) (2025-09-02)
 
 
