@@ -3,7 +3,6 @@ import { type Preview } from "@storybook/react-vite";
 
 import Template from "../src/Template.mdx";
 
-import "@design-system/ui/styles.css";
 import "@design-system/tailwind-config/styles.css";
 
 export const parameters: Preview["parameters"] = {
