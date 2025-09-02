@@ -1,3 +1,10 @@
+## [2.5.13](https://github.com/brunomacedo-coxbr/semantic-release/compare/v2.5.12...v2.5.13) (2025-09-02)
+
+
+### Bug Fixes
+
+* **Actions:** open pr main and staing ([ec44e46](https://github.com/brunomacedo-coxbr/semantic-release/commit/ec44e469a28b9ef4c165cb065e5bc3fc8bce19dc))
+
 ## [2.5.12](https://github.com/brunomacedo-coxbr/semantic-release/compare/v2.5.11...v2.5.12) (2025-09-02)
 
 
