@@ -1,3 +1,20 @@
+## [2.5.10](https://github.com/brunomacedo-coxbr/semantic-release/compare/v2.5.9...v2.5.10) (2025-09-02)
+
+
+### Bug Fixes
+
+* **Actions:** create branch ([8305e38](https://github.com/brunomacedo-coxbr/semantic-release/commit/8305e387521d0310ebb34eb32c809e5f62316860))
+* **Actions:** create branch ([729db09](https://github.com/brunomacedo-coxbr/semantic-release/commit/729db098160ecf1cf8e528515465c330d2d32f7f))
+* **Actions:** create branch ([fc1c2e8](https://github.com/brunomacedo-coxbr/semantic-release/commit/fc1c2e81197ca33668fdf7675da30c8c342136a3))
+* **Actions:** creating branchs ([89ac069](https://github.com/brunomacedo-coxbr/semantic-release/commit/89ac06978cb4f5950bb0ace90f0d549b2f61abaf))
+* **Actions:** on delete ([10fa2ea](https://github.com/brunomacedo-coxbr/semantic-release/commit/10fa2ea29113987052c79d98b26cef791aea5478))
+* **Actions:** open pr main and staing ([ec44e46](https://github.com/brunomacedo-coxbr/semantic-release/commit/ec44e469a28b9ef4c165cb065e5bc3fc8bce19dc))
+* **Actions:** open pull request ([7fb45e5](https://github.com/brunomacedo-coxbr/semantic-release/commit/7fb45e5a373a8eebd86d2a6024d946f9e0f5e50e))
+* **Actions:** open pull request ([70a3787](https://github.com/brunomacedo-coxbr/semantic-release/commit/70a3787a5907f57c5c5c789a39f3fffa13757da4))
+* **Build:** print version ([958fb73](https://github.com/brunomacedo-coxbr/semantic-release/commit/958fb73097f1d535ecb969322fea5076e86df761))
+* **Actions:** update release ([376cb60](https://github.com/brunomacedo-coxbr/semantic-release/commit/376cb605d7e3031712ef691676598ee0ce474cc1))
+* **Actions:** update release ([6f72156](https://github.com/brunomacedo-coxbr/semantic-release/commit/6f721562745fa0d520c68cf3cedd530e0cb2e7fe))
+
 ## [2.5.11](https://github.com/brunomacedo-coxbr/semantic-release/compare/v2.5.10...v2.5.11) (2025-09-02)
 
 
