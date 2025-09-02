@@ -72,6 +72,6 @@
     "vite": "^7.1.4",
     "vite-plugin-svgr": "^4.5.0"
   },
-  "packageManager": "pnpm@10.14.0",
-  "version": "2.5.20"
+  "packageManager": "pnpm@10.15.1",
+  "version": "10.0.0"
 }
