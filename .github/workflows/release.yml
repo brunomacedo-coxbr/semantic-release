@@ -1,4 +1,4 @@
-name: Semantic Release
+name: Release
 
 on:
   push:
@@ -44,7 +44,7 @@ jobs:
         env:
           HUSKY: 0
 
-      - name: Release 💥
+      - name: Semantic Release 💥
         run: npx semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
