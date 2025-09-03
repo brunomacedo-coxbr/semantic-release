@@ -47,21 +47,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Check Changes 🔍
-        id: Check_Changes
-        run: |
-          git fetch origin $GITHUB_REF
-          if [[ -n "$(git status --porcelain)" ]]; then
-            echo "Changes detected!"
-            echo "::set-output name=changed::true"
-          else
-            echo "No changes detected."
-            echo "::set-output name=changed::false"
-          fi
-        continue-on-error: true
-
       - name: Create PR from release to main 🚀
-        if: success() && steps.Check_Changes.outcome == 'success' && steps.Check_Changes.outputs.changed == 'true'
         run: |
           git config --global user.email "actions@github.com"
           git config --global user.name "GitHub Actions"
@@ -73,7 +59,6 @@ jobs:
           gh pr create --base main --head $GITHUB_REF --title "Release PR" --body "Automated PR with release updates." --label "release"
 
       - name: Create PR from release to staging 🚀
-        if: success() && steps.Check_Changes.outcome == 'success' && steps.Check_Changes.outputs.changed == 'true'
         run: |
           git config --global user.email "actions@github.com"
           git config --global user.name "GitHub Actions"
