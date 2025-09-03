@@ -1,3 +1,10 @@
+# [2.8.0](https://github.com/brunomacedo-coxbr/semantic-release/compare/v2.7.0...v2.8.0) (2025-09-03)
+
+
+### Features
+
+* **Actions:** check before merge 2 ([be9e54f](https://github.com/brunomacedo-coxbr/semantic-release/commit/be9e54fdc2e70ef4f1b30c11de19b1778fd3178d))
+
 # [2.7.0](https://github.com/brunomacedo-coxbr/semantic-release/compare/v2.6.0...v2.7.0) (2025-09-03)
 
 
