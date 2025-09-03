@@ -1,6 +1,6 @@
 {
   "name": "@design-system/ui",
-  "version": "2.5.14",
+  "version": "0.0.0",
   "files": [
     "dist/**",
     "README.md",
@@ -14,6 +14,26 @@
     },
     "./colors.css": "./dist/colors.css",
     "./styles.css": "./dist/styles.css"
+  },
+  "scripts": {
+    "copy:version": "VERSION=$(npm pkg get version --json | jq -r '.') && jq \".version=\\\"$VERSION\\\"\" ../../package.json > tmp.json && ls -la && mv tmp.json ../../package.json",
+    "copy:docs": "cp -r ../../README.md . && cp -r ../../CHANGELOG.md .",
+    "postversion": "pnpm copy:version && pnpm copy:docs && npm pkg delete devDependencies scripts",
+    "build:assets": "cp ../../config/tailwind-config/colors.css ./dist/colors.css && rm -rf ./dist/themes && cp -R ./src/themes ./dist/themes",
+    "build:tailwind": "tailwindcss -i ./src/styles.css -o ./dist/styles.css",
+    "build": "tsup && pnpm build:assets && pnpm build:tailwind",
+    "shadcn:add": "pnpm dlx shadcn@latest add",
+    "dev": "concurrently \"tsup --watch\" \"pnpm build:tailwind --watch\"",
+    "test": "jest --verbose",
+    "test:coverage": "jest --coverage",
+    "test:watch": "jest --watch",
+    "lint": "eslint .",
+    "generate:component": "turbo gen react-component",
+    "check-types": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@design-system/eslint-config": "workspace:*",
+    "@design-system/typescript-config": "workspace:*"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.15",
