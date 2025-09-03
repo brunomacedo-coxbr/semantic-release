@@ -6,16 +6,14 @@ on:
       - release/*
 
 permissions:
-  contents: read
+  contents: write
+  pull-requests: write
+  issues: write
+  actions: write
 
 jobs:
   release:
     runs-on: ubuntu-latest
-    permissions:
-      actions: write
-      contents: write
-      issues: write
-      pull-requests: write
     environment: staging
     env:
       VITE_STAGE: "${{ vars.VITE_STAGE }}"
@@ -48,3 +46,37 @@ jobs:
         run: npx semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check Changes 🔍
+        run: |
+          git diff --exit-code
+        continue-on-error: true
+
+      - name: Install GitHub CLI 📦
+        run: |
+          sudo apt-get update
+          sudo apt-get install gh
+
+      - name: Configure GitHub CLI 👩‍💻
+        run: |
+          gh auth login --with-token <<< "${{ secrets.GITHUB_TOKEN }}"
+
+      - name: Create PR from release to main 🚀
+        if: success() && steps["Check Changes"].outcome == "success"
+        run: |
+          git fetch origin main
+          git checkout $GITHUB_REF
+          git add .
+          git commit -m "chore: update after release"
+          git push origin $GITHUB_REF
+          gh pr create --base main --head $GITHUB_REF --title "Release PR" --body "Automated PR with release updates." --label "release"
+
+      - name: Create PR from release to staging 🚀
+        if: success() && steps["Check Changes"].outcome == "success"
+        run: |
+          git fetch origin staging
+          git checkout $GITHUB_REF
+          git add .
+          git commit -m "chore: update after release"
+          git push origin $GITHUB_REF
+          gh pr create --base staging --head $GITHUB_REF --title "Release PR" --body "Automated PR with release updates." --label "release"
