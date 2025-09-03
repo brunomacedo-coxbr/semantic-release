@@ -1,3 +1,10 @@
+## [2.11.2](https://github.com/brunomacedo-coxbr/semantic-release/compare/v2.11.1...v2.11.2) (2025-09-03)
+
+
+### Bug Fixes
+
+* **Actions:** it works ([b940cf6](https://github.com/brunomacedo-coxbr/semantic-release/commit/b940cf6e739da35712b8d65f13e32ee7a36e3796))
+
 ## [2.11.1](https://github.com/brunomacedo-coxbr/semantic-release/compare/v2.11.0...v2.11.1) (2025-09-03)
 
 
