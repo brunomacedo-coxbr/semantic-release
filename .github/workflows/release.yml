@@ -53,12 +53,16 @@ jobs:
           git config --global user.name "GitHub Actions"
           git fetch origin $GITHUB_REF
 
-          EXISTING_PR=$(gh pr list --base main --head $GITHUB_REF --json number --jq '.[].number')
+          echo "GITHUB_REF: $GITHUB_REF"
 
-          if [ -z "$EXISTING_PR" ]; then
-            gh pr create --base main --head $GITHUB_REF --title "Release PR" --body "Automated PR with release updates." --label "semantic-release"
+          BRANCH_NAME=${GITHUB_REF#refs/heads/}
+
+          PR_EXISTS=$(gh pr list --base main --head $BRANCH_NAME --json number --jq '.[].number')
+
+          if [ -z "$PR_EXISTS" ]; then
+            gh pr create --base main --head $BRANCH_NAME --title "Release PR" --body "Automated PR with release updates." --label "semantic-release"
           else
-            echo "PR já existe para esse branch, número: $EXISTING_PR"
+            echo "PR já existe para esse branch, número: $PR_EXISTS"
           fi
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -69,12 +73,16 @@ jobs:
           git config --global user.name "GitHub Actions"
           git fetch origin $GITHUB_REF
 
-          EXISTING_PR=$(gh pr list --base main --head $GITHUB_REF --json number --jq '.[].number')
+          echo "GITHUB_REF: $GITHUB_REF"
 
-          if [ -z "$EXISTING_PR" ]; then
-            gh pr create --base main --head $GITHUB_REF --title "Release PR" --body "Automated PR with release updates." --label "semantic-release"
+          BRANCH_NAME=${GITHUB_REF#refs/heads/}
+
+          PR_EXISTS=$(gh pr list --base staging --head $BRANCH_NAME --json number --jq '.[].number')
+
+          if [ -z "$PR_EXISTS" ]; then
+            gh pr create --base staging --head $BRANCH_NAME --title "Release PR" --body "Automated PR with release updates." --label "semantic-release"
           else
-            echo "PR já existe para esse branch, número: $EXISTING_PR"
+            echo "PR já existe para esse branch, número: $PR_EXISTS"
           fi
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
