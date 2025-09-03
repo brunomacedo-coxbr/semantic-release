@@ -53,6 +53,8 @@ jobs:
           git config --global user.name "GitHub Actions"
           git fetch origin $GITHUB_REF
           gh pr create --base main --head $GITHUB_REF --title "Release PR" --body "Automated PR with release updates." --label "release"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create PR from release to staging 🚀
         run: |
@@ -60,3 +62,5 @@ jobs:
           git config --global user.name "GitHub Actions"
           git fetch origin $GITHUB_REF
           gh pr create --base staging --head $GITHUB_REF --title "Release PR" --body "Automated PR with release updates." --label "release"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
