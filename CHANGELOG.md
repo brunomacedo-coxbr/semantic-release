@@ -1,3 +1,10 @@
+## [2.11.5](https://github.com/brunomacedo-coxbr/semantic-release/compare/v2.11.4...v2.11.5) (2025-09-03)
+
+
+### Bug Fixes
+
+* **Actions:** verify exists ([520f492](https://github.com/brunomacedo-coxbr/semantic-release/commit/520f492b1cee46dface35a478db5f49a9947f2f1))
+
 ## [2.11.4](https://github.com/brunomacedo-coxbr/semantic-release/compare/v2.11.3...v2.11.4) (2025-09-03)
 
 
