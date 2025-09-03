@@ -48,23 +48,22 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Check Changes 🔍
+        id: Check_Changes
         run: |
-          git diff --exit-code
+          git fetch origin $GITHUB_REF
+          if [[ -n "$(git status --porcelain)" ]]; then
+            echo "Changes detected!"
+            echo "::set-output name=changed::true"
+          else
+            echo "No changes detected."
+            echo "::set-output name=changed::false"
+          fi
         continue-on-error: true
 
-      - name: Install GitHub CLI 📦
-        run: |
-          sudo apt-get update
-          sudo apt-get install gh
-
-      - name: Configure GitHub CLI 👩‍💻
-        run: |
-          gh auth login --with-token <<< "${{ secrets.GITHUB_TOKEN }}"
-
       - name: Create PR from release to main 🚀
-        if: success() && steps['Check Changes'].outcome == 'success'
+        if: success() && steps.Check_Changes.outcome == 'success' && steps.Check_Changes.outputs.changed == 'true'
         run: |
-          git fetch origin main
+          git fetch origin $GITHUB_REF
           git checkout $GITHUB_REF
           git add .
           git commit -m "chore: update after release"
@@ -72,9 +71,9 @@ jobs:
           gh pr create --base main --head $GITHUB_REF --title "Release PR" --body "Automated PR with release updates." --label "release"
 
       - name: Create PR from release to staging 🚀
-        if: success() && steps['Check Changes'].outcome == 'success'
+        if: success() && steps.Check_Changes.outcome == 'success' && steps.Check_Changes.outputs.changed == 'true'
         run: |
-          git fetch origin staging
+          git fetch origin $GITHUB_REF
           git checkout $GITHUB_REF
           git add .
           git commit -m "chore: update after release"
