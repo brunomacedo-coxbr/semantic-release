@@ -62,7 +62,7 @@ jobs:
           if [ -z "$PR_EXISTS" ]; then
             gh pr create --base main --head $BRANCH_NAME --title "Release PR" --body "Automated PR with release updates." --label "semantic-release"
           else
-            echo "PR já existe para esse branch, número: $PR_EXISTS"
+            echo "PR already exists for this branch, PR number: $PR_EXISTS"
           fi
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -82,7 +82,7 @@ jobs:
           if [ -z "$PR_EXISTS" ]; then
             gh pr create --base staging --head $BRANCH_NAME --title "Release PR" --body "Automated PR with release updates." --label "semantic-release"
           else
-            echo "PR já existe para esse branch, número: $PR_EXISTS"
+            echo "PR already exists for this branch, PR number: $PR_EXISTS"
           fi
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
