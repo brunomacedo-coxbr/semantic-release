@@ -54,7 +54,7 @@
       {
         "assets": [
           "CHANGELOG.md",
-          "packages/ui/package.json"
+          "package.json"
         ]
       }
     ]
