@@ -62,7 +62,7 @@ jobs:
           gh auth login --with-token <<< "${{ secrets.GITHUB_TOKEN }}"
 
       - name: Create PR from release to main 🚀
-        if: success() && steps.Check Changes.outcome == 'success'
+        if: success() && steps['Check Changes'].outcome == 'success'
         run: |
           git fetch origin main
           git checkout $GITHUB_REF
@@ -72,7 +72,7 @@ jobs:
           gh pr create --base main --head $GITHUB_REF --title "Release PR" --body "Automated PR with release updates." --label "release"
 
       - name: Create PR from release to staging 🚀
-        if: success() && steps.Check Changes.outcome == 'success'
+        if: success() && steps['Check Changes'].outcome == 'success'
         run: |
           git fetch origin staging
           git checkout $GITHUB_REF
