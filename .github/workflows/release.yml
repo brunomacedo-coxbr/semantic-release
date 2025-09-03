@@ -63,6 +63,8 @@ jobs:
       - name: Create PR from release to main 🚀
         if: success() && steps.Check_Changes.outcome == 'success' && steps.Check_Changes.outputs.changed == 'true'
         run: |
+          git config --global user.email "actions@github.com"
+          git config --global user.name "GitHub Actions"
           git fetch origin $GITHUB_REF
           git checkout $GITHUB_REF
           git add .
@@ -73,6 +75,8 @@ jobs:
       - name: Create PR from release to staging 🚀
         if: success() && steps.Check_Changes.outcome == 'success' && steps.Check_Changes.outputs.changed == 'true'
         run: |
+          git config --global user.email "actions@github.com"
+          git config --global user.name "GitHub Actions"
           git fetch origin $GITHUB_REF
           git checkout $GITHUB_REF
           git add .
