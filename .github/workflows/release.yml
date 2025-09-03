@@ -52,15 +52,29 @@ jobs:
           git config --global user.email "actions@github.com"
           git config --global user.name "GitHub Actions"
           git fetch origin $GITHUB_REF
-          gh pr create --base main --head $GITHUB_REF --title "Release PR" --body "Automated PR with release updates." --label "semantic-release"
+
+          EXISTING_PR=$(gh pr list --base main --head $GITHUB_REF --json number --jq '.[].number')
+
+          if [ -z "$EXISTING_PR" ]; then
+            gh pr create --base main --head $GITHUB_REF --title "Release PR" --body "Automated PR with release updates." --label "semantic-release"
+          else
+            echo "PR já existe para esse branch, número: $EXISTING_PR"
+          fi
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # - name: Create PR from release to staging 🚀
-      #   run: |
-      #     git config --global user.email "actions@github.com"
-      #     git config --global user.name "GitHub Actions"
-      #     git fetch origin $GITHUB_REF
-      #     gh pr create --base staging --head $GITHUB_REF --title "Release PR" --body "Automated PR with release updates." --label "semantic-release"
-      #   env:
-      #     GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create PR from release to staging 🚀
+        run: |
+          git config --global user.email "actions@github.com"
+          git config --global user.name "GitHub Actions"
+          git fetch origin $GITHUB_REF
+
+          EXISTING_PR=$(gh pr list --base main --head $GITHUB_REF --json number --jq '.[].number')
+
+          if [ -z "$EXISTING_PR" ]; then
+            gh pr create --base main --head $GITHUB_REF --title "Release PR" --body "Automated PR with release updates." --label "semantic-release"
+          else
+            echo "PR já existe para esse branch, número: $EXISTING_PR"
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
