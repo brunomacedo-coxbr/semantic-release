@@ -50,8 +50,9 @@
       }
     ],
     [
-      "@semantic-release/git",
+      "semantic-release-github-pullrequest",
       {
+        "baseRef": "main",
         "assets": [
           "CHANGELOG.md",
           "package.json"
