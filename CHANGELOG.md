@@ -1,3 +1,10 @@
+## [2.11.6](https://github.com/brunomacedo-coxbr/semantic-release/compare/v2.11.5...v2.11.6) (2025-09-11)
+
+
+### Bug Fixes
+
+* **Actions:** do not skip ([5c116af](https://github.com/brunomacedo-coxbr/semantic-release/commit/5c116afd02f415d37bc182eb65d5f61c833ae092))
+
 ## [2.11.5](https://github.com/brunomacedo-coxbr/semantic-release/compare/v2.11.4...v2.11.5) (2025-09-03)
 
 
