@@ -1,0 +1,72 @@
+name: Rollback Production
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Rollback version"
+        required: true
+        type: string
+
+jobs:
+  deploy-dark:
+    name: Rollback Dark Prod
+    runs-on: ubuntu-latest
+    environment: dark-prod
+    steps:
+      - name: Checkout Repository 🛎️
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fetch Build Files for Version 🎒
+        run: |
+          VERSION=${{ github.event.inputs.version }}
+          echo "Rolling back to version $VERSION"
+
+          # Check if the folder for the version exists
+          if [ -d "./releases/$VERSION" ]; then
+            echo "Found build files for version $VERSION"
+            # Copy the build files back to the build directory (or wherever necessary)
+            cp -r ./releases/$VERSION/* ./packages/ui/dist/
+          else
+            echo "No build files found for version $VERSION!"
+            exit 1
+          fi
+
+      - name: Deploy the Rollback Version 🚀
+        run: |
+          echo "Deploying version $VERSION to dark-prod"
+          # Insert your deployment logic here, for example:
+          # ./deploy.sh or whatever process is needed to deploy the files
+
+  deploy-green:
+    name: Rollback Green Prod
+    runs-on: ubuntu-latest
+    environment: green-prod
+    steps:
+      - name: Checkout Repository 🛎️
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fetch Build Files for Version 🎒
+        run: |
+          VERSION=${{ github.event.inputs.version }}
+          echo "Rolling back to version $VERSION"
+
+          # Check if the folder for the version exists
+          if [ -d "./releases/$VERSION" ]; then
+            echo "Found build files for version $VERSION"
+            # Copy the build files back to the build directory (or wherever necessary)
+            cp -r ./releases/$VERSION/* ./packages/ui/dist/
+          else
+            echo "No build files found for version $VERSION!"
+            exit 1
+          fi
+
+      - name: Deploy the Rollback Version 🚀
+        run: |
+          echo "Deploying version $VERSION to dark-prod"
+          # Insert your deployment logic here, for example:
+          # ./deploy.sh or whatever process is needed to deploy the files
