@@ -15,9 +15,9 @@ on:
           required: true
           type: choice
           options:
-            - beta
-            - dark
-            - green
+          - beta
+          - dark
+          - green
 
 # Allow only one concurrent deployment
 concurrency:
