@@ -1,45 +1,51 @@
 # Semantic Release
 
 ```mermaid
-flowchart TD
-  %% --- SECTIONS ---
-  subgraph DEV["🚧 Development (workflow_dispatch)"]
-    BETA["Beta Environment<br/><code>environment: beta</code>"]
+flowchart LR
+ subgraph DEV["Development"]
+    direction TB
+        dev_push["Manual Trigger<br><b>workflow_dispatch</b>"]
+        beta_env["Beta Deploy<br><code>environment: beta</code>"]
   end
-
-  subgraph STG["🧪 Staging (branch: staging)"]
-    DARK_NP["Dark NP<br/><code>environment: dark-np</code>"]
-    GREEN_NP["Green NP<br/><code>environment: green-np</code>"]
-    DARK_NP --> GREEN_NP
+ subgraph STG["Staging"]
+    direction TB
+        push_staging["Push to <b>staging</b> branch"]
+        dark_np["Deploy to Dark NonProd<br><code>environment: dark-np</code>"]
+        green_np["Deploy to Green NonProd<br><code>environment: green-np</code>"]
   end
-
-  subgraph PROD["🚀 Production (branch: release/*)"]
-    DARK_PROD["Dark Prod<br/><code>environment: dark-prod</code>"]
-    GREEN_PROD["Green Prod<br/><code>environment: green-prod</code>"]
-    RELEASE["Semantic Release & PR Sync<br/><code>environment: production</code>"]
-
-    DARK_PROD --> GREEN_PROD
-    GREEN_PROD --> RELEASE
+ subgraph PROD["Production"]
+    direction TB
+        push_release["Push to <b>release/*</b> branch"]
+        dark_prod["Deploy to Dark Prod<br><code>environment: dark-prod</code>"]
+        green_prod["Deploy to Green Prod<br><code>environment: green-prod</code>"]
+        semantic_release["Semantic Release<br>Tagging, PR to <b>main</b> and <b>staging</b><br><code>environment: production</code>"]
   end
-
-  %% --- FLOW RELATIONS ---
-  BETA --> STG
-  STG --> PROD
-
-  %% --- STYLES ---
-  classDef dev fill:#B3E5FC,stroke:#0288D1,color:#000,stroke-width:1px;
-  classDef stg fill:#FFF9C4,stroke:#FBC02D,color:#000,stroke-width:1px;
-  classDef prod fill:#C8E6C9,stroke:#2E7D32,color:#000,stroke-width:1px;
-
-  class BETA dev
-  class DARK_NP,GREEN_NP stg
-  class DARK_PROD,GREEN_PROD,RELEASE prod
+    dev_push --> beta_env
+    push_staging --> dark_np
+    dark_np --> green_np
+    push_release --> dark_prod
+    dark_prod --> green_prod
+    green_prod --> semantic_release
+    DEV -. Promote code<br>via Pull Request .-> STG
+    STG -. Promote code<br>via Pull Request .-> PROD
+     dev_push:::dev
+     beta_env:::dev
+     push_staging:::stg
+     dark_np:::stg
+     green_np:::stg
+     push_release:::prod
+     dark_prod:::prod
+     green_prod:::prod
+     semantic_release:::prod
+    classDef dev fill:#B3E5FC,stroke:#0288D1,color:#111
+    classDef stg fill:#FFF9C4,stroke:#FBC02D,color:#111
+    classDef prod fill:#C8E6C9,stroke:#2E7D32,color:#111
 ```
 
-## Explicação
+## Explain
 
-| Tipo de Deployment | Workflow File                       | Branch / Trigger           | Environments envolvidos            | Sequência                                              |
-| ------------------ | ----------------------------------- | -------------------------- | ---------------------------------- | ------------------------------------------------------ |
-| **Development**    | `.github/workflows/development.yml` | `workflow_dispatch` manual | `beta`                             | único job                                              |
-| **Staging**        | `.github/workflows/staging.yml`     | `push → staging`           | `dark-np → green-np`               | dark antes de green                                    |
-| **Production**     | `.github/workflows/production.yml`  | `push → release/*`         | `dark-prod → green-prod → release` | executa dark, depois green, e por fim semantic-release |
+| Deployment      | File              | Trigger                    | Environments                       | Sequence                                   |
+| --------------- | ----------------- | -------------------------- | ---------------------------------- | ------------------------------------------ |
+| **Development** | `development.yml` | `workflow_dispatch` manual | `beta`                             | once                                       |
+| **Staging**     | `staging.yml`     | `push → staging`           | `dark-np → green-np`               | green before dark                          |
+| **Production**  | `production.yml`  | `push → release/*`         | `dark-prod → green-prod → release` | runs dark, green and then semantic-release |

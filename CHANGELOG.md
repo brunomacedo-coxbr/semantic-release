@@ -1,3 +1,17 @@
+## [2.11.9](https://github.com/brunomacedo-coxbr/semantic-release/compare/v2.11.8...v2.11.9) (2025-10-13)
+
+
+### Bug Fixes
+
+* **Actions:** create new enviroments ([8e4b823](https://github.com/brunomacedo-coxbr/semantic-release/commit/8e4b823b7d24626827e156a2b4416a8b0eb8e26e))
+* **Actions:** create new enviroments ([04997c5](https://github.com/brunomacedo-coxbr/semantic-release/commit/04997c5ccbd2e1e74ffdd11b08f33a3d5ef69de9))
+* **Actions:** get option trigger ([1934946](https://github.com/brunomacedo-coxbr/semantic-release/commit/1934946e11615c8481b7ccb269bfe5a38598acc3))
+* **Actions:** remove duplicate on trigger ([542f4c4](https://github.com/brunomacedo-coxbr/semantic-release/commit/542f4c4dad9b7a1e9797ca0b1280180eacf99c83))
+* **Actions:** rename dev ([279f0c0](https://github.com/brunomacedo-coxbr/semantic-release/commit/279f0c0f9e773b5d0fff5a68e49fca4df446f232))
+* **Actions:** rename labels ([b694c85](https://github.com/brunomacedo-coxbr/semantic-release/commit/b694c853d34885ffef0e8f534994b28bcf878f2b))
+* **Actions:** rename labels ([bba71c4](https://github.com/brunomacedo-coxbr/semantic-release/commit/bba71c4af2e6a412c6f756a46aeaf1d2ef0904fd))
+* **Actions:** retry option trigger ([e49a4e1](https://github.com/brunomacedo-coxbr/semantic-release/commit/e49a4e151a73ec10c9a8f4c1d13010e855e5fd06))
+
 ## [2.11.8](https://github.com/brunomacedo-coxbr/semantic-release/compare/v2.11.7...v2.11.8) (2025-10-13)
 
 
