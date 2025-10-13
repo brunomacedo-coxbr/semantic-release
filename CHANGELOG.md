@@ -1,3 +1,10 @@
+## [2.11.8](https://github.com/brunomacedo-coxbr/semantic-release/compare/v2.11.7...v2.11.8) (2025-10-13)
+
+
+### Bug Fixes
+
+* **Actions:** test workflow ([9e81176](https://github.com/brunomacedo-coxbr/semantic-release/commit/9e81176773c92771ada4db4a12a52e171d36a607))
+
 ## [2.11.7](https://github.com/brunomacedo-coxbr/semantic-release/compare/v2.11.6...v2.11.7) (2025-09-11)
 
 
