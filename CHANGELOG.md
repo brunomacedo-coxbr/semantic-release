@@ -1,3 +1,10 @@
+## [2.11.10](https://github.com/brunomacedo-coxbr/semantic-release/compare/v2.11.9...v2.11.10) (2025-10-13)
+
+
+### Bug Fixes
+
+* **CSS:** replace colors ([811109d](https://github.com/brunomacedo-coxbr/semantic-release/commit/811109d281733409bbbc233dfb37887e89bddabf))
+
 ## [2.11.9](https://github.com/brunomacedo-coxbr/semantic-release/compare/v2.11.8...v2.11.9) (2025-10-13)
 
 
