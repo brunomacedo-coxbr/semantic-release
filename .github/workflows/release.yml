@@ -1,4 +1,4 @@
-name: Release
+name: Deploy Production
 
 on:
   push:
@@ -6,13 +6,16 @@ on:
       - release/*
 
 permissions:
-  contents: write
-  pull-requests: write
-  issues: write
-  actions: write
+  contents: read
+
+# Allow only one concurrent deployment
+concurrency:
+  group: release
+  cancel-in-progress: true
 
 jobs:
-  release:
+  deploy-dark-prod:
+    name: Deploy to Dark Prod 💥
     runs-on: ubuntu-latest
     environment: production
     env:
@@ -20,12 +23,76 @@ jobs:
 
     steps:
       - name: Checkout 🛎️
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Setup 🚩
-        uses: actions/setup-node@v3
+      - name: Setup node 🚩
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+
+      - name: Setup pnpm 🔧
+        uses: pnpm/action-setup@v4
+
+      - name: Setup pnpm 🔧
+        uses: pnpm/action-setup@v4
+
+      - name: Build
+        run: echo "Building..."
+
+  deploy-green-prod:
+    name: Deploy to Green Prod 💥
+    needs:
+      - deploy-dark-prod
+    runs-on: ubuntu-latest
+    environment: production
+    env:
+      VITE_STAGE: "${{ vars.VITE_STAGE }}"
+
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup node 🚩
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+
+      - name: Setup pnpm 🔧
+        uses: pnpm/action-setup@v4
+
+      - name: Setup pnpm 🔧
+        uses: pnpm/action-setup@v4
+
+      - name: Build
+        run: echo "Building..."
+
+  release:
+    name: Generate Release 💥
+    runs-on: ubuntu-latest
+    environment: production
+    needs:
+      - deploy-dark-prod
+      - deploy-green-prod
+    permissions:
+      actions: write
+      contents: write
+      issues: write
+      pull-requests: write
+    env:
+      VITE_STAGE: "${{ vars.VITE_STAGE }}"
+
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup node 🚩
+        uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
 
