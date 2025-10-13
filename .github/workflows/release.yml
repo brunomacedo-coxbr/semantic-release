@@ -126,7 +126,7 @@ jobs:
             PR_EXISTS_MAIN=$(gh pr list --base main --head $BRANCH_NAME --json number --jq '.[].number')
 
             if [ -z "$PR_EXISTS_MAIN" ]; then
-              gh pr create --base main --head $BRANCH_NAME --title "Release PR" --body "Automated PR with release updates." --label "semantic-release"
+              gh pr create --base main --head $BRANCH_NAME --title "Sync Release Main" --body "Automated PR with release updates." --label "semantic-release"
             else
               echo "PR already exists for this branch on main, PR number: $PR_EXISTS_MAIN"
             fi
@@ -152,7 +152,7 @@ jobs:
             PR_EXISTS_STAGING=$(gh pr list --base staging --head $BRANCH_NAME --json number --jq '.[].number')
 
             if [ -z "$PR_EXISTS_STAGING" ]; then
-              gh pr create --base staging --head $BRANCH_NAME --title "Release PR" --body "Automated PR with release updates." --label "semantic-release"
+              gh pr create --base staging --head $BRANCH_NAME --title "Sync Release Staging" --body "Automated PR with release updates." --label "semantic-release"
             else
               echo "PR already exists for this branch on staging, PR number: $PR_EXISTS_STAGING"
             fi
