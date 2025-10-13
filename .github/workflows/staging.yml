@@ -1,35 +1,21 @@
-name: Deploy NonProd
+name: Deploy Staging
 
 on:
   push:
     branches:
       - staging
 
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
-    inputs:
-      environment:
-        description: 'Choose the environment'
-        default: 'beta'
-        required: true
-        type: choice
-        options:
-          - beta
-          - dark
-          - green
-
 # Allow only one concurrent deployment
 concurrency:
-  group: deploy
+  group: staging
   cancel-in-progress: true
 
 jobs:
-  build-and-deploy:
-    name: Build and Deploy 💥
+  deploy-dark:
+    name: Deploy Dark 💥
     runs-on: ubuntu-latest
-    environment: staging
+    environment: dark-np
     env:
-      AWS_S3_BUCKET_NAME: "${{ vars.AWS_S3_BUCKET_NAME }}"
       VITE_STAGE: "${{ vars.VITE_STAGE }}"
 
     steps:
@@ -46,5 +32,31 @@ jobs:
       - name: Setup pnpm 🔧
         uses: pnpm/action-setup@v4
 
-      - name:
-        run: echo "🚀 Built s3://${{ github.event.inputs.environment }}.${{ env.AWS_S3_BUCKET_NAME }}"
+      - name: Echo
+        run: echo "🚀 Built s3://${{ env.VITE_STAGE }}"
+
+  deploy-green:
+    name: Deploy Green 💥
+    runs-on: ubuntu-latest
+    needs:
+      - deploy-dark
+    environment: green-np
+    env:
+      VITE_STAGE: "${{ vars.VITE_STAGE }}"
+
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup node 🚩
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+
+      - name: Setup pnpm 🔧
+        uses: pnpm/action-setup@v4
+
+      - name: Echo
+        run: echo "🚀 Built s3://${{ env.VITE_STAGE }}"

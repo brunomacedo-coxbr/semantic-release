@@ -1,0 +1,44 @@
+name: Deploy Development
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Choose the environment'
+        default: 'beta'
+        required: true
+        type: choice
+        options:
+          - beta
+          - dark
+          - green
+
+# Allow only one concurrent deployment
+concurrency:
+  group: development
+  cancel-in-progress: true
+
+jobs:
+  deploy-dark:
+    name: Deploy Dark 💥
+    runs-on: ubuntu-latest
+    environment: beta
+    env:
+      VITE_STAGE: "${{ vars.VITE_STAGE }}"
+
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup node 🚩
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+
+      - name: Setup pnpm 🔧
+        uses: pnpm/action-setup@v4
+
+      - name: Echo
+        run: echo "🚀 Built s3://${{ env.VITE_STAGE }}"
