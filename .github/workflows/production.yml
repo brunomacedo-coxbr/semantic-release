@@ -14,10 +14,10 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  deploy-dark-prod:
+  deploy-dark:
     name: Deploy to Dark Prod 💥
     runs-on: ubuntu-latest
-    environment: production
+    environment: dark-prod
     env:
       VITE_STAGE: "${{ vars.VITE_STAGE }}"
 
@@ -38,12 +38,12 @@ jobs:
       - name: Build
         run: echo "🚀 Built"
 
-  deploy-green-prod:
+  deploy-green:
     name: Deploy to Green Prod 💥
     needs:
       - deploy-dark-prod
     runs-on: ubuntu-latest
-    environment: production
+    environment: green-prod
     env:
       VITE_STAGE: "${{ vars.VITE_STAGE }}"
 
