@@ -36,7 +36,7 @@ jobs:
         uses: pnpm/action-setup@v4
 
       - name: Build
-        run: echo "Building..."
+        run: echo "🚀 Built"
 
   deploy-green-prod:
     name: Deploy to Green Prod 💥
@@ -62,7 +62,7 @@ jobs:
         uses: pnpm/action-setup@v4
 
       - name: Build
-        run: echo "Building..."
+        run: echo "🚀 Built"
 
   release:
     name: Generate Release 💥
