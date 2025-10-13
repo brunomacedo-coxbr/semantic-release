@@ -41,7 +41,7 @@ jobs:
   deploy-green:
     name: Deploy to Green Prod 💥
     needs:
-      - deploy-dark-prod
+      - deploy-dark
     runs-on: ubuntu-latest
     environment: green-prod
     env:
@@ -69,8 +69,8 @@ jobs:
     runs-on: ubuntu-latest
     environment: production
     needs:
-      - deploy-dark-prod
-      - deploy-green-prod
+      - deploy-dark
+      - deploy-green
     permissions:
       actions: write
       contents: write
