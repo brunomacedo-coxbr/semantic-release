@@ -19,8 +19,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  deploy-dark:
-    name: Deploy Dark 💥
+  deploy-beta:
+    name: Deploy Beta 💥
     runs-on: ubuntu-latest
     environment: beta
     env:
