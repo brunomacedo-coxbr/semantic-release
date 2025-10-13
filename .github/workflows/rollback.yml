@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: "Rollback version"
+        description: "Rollback version (Tag)"
         required: true
         type: string
 
@@ -23,6 +23,9 @@ jobs:
         run: |
           VERSION=${{ github.event.inputs.version }}
           echo "Rolling back to version $VERSION"
+
+          # Fetch the selected tag from the repository
+          git fetch origin $VERSION
 
           # Check if the folder for the version exists
           if [ -d "./releases/$VERSION" ]; then
@@ -55,6 +58,9 @@ jobs:
           VERSION=${{ github.event.inputs.version }}
           echo "Rolling back to version $VERSION"
 
+          # Fetch the selected tag from the repository
+          git fetch origin $VERSION
+
           # Check if the folder for the version exists
           if [ -d "./releases/$VERSION" ]; then
             echo "Found build files for version $VERSION"
@@ -67,6 +73,6 @@ jobs:
 
       - name: Deploy the Rollback Version 🚀
         run: |
-          echo "Deploying version $VERSION to dark-prod"
+          echo "Deploying version $VERSION to green-prod"
           # Insert your deployment logic here, for example:
           # ./deploy.sh or whatever process is needed to deploy the files
