@@ -35,9 +35,6 @@ jobs:
       - name: Setup pnpm 🔧
         uses: pnpm/action-setup@v4
 
-      - name: Setup pnpm 🔧
-        uses: pnpm/action-setup@v4
-
       - name: Build
         run: echo "Building..."
 
@@ -60,9 +57,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
-
-      - name: Setup pnpm 🔧
-        uses: pnpm/action-setup@v4
 
       - name: Setup pnpm 🔧
         uses: pnpm/action-setup@v4
@@ -124,12 +118,18 @@ jobs:
 
           BRANCH_NAME=${GITHUB_REF#refs/heads/}
 
-          PR_EXISTS=$(gh pr list --base main --head $BRANCH_NAME --json number --jq '.[].number')
+          DIFF_MAIN=$(git diff origin/main..origin/$BRANCH_NAME)
 
-          if [ -z "$PR_EXISTS" ]; then
-            gh pr create --base main --head $BRANCH_NAME --title "Release PR" --body "Automated PR with release updates." --label "semantic-release"
+          if [ -z "$DIFF_MAIN" ]; then
+            echo "No changes between branch $BRANCH_NAME and main. PR will not be created for main."
           else
-            echo "PR already exists for this branch, PR number: $PR_EXISTS"
+            PR_EXISTS_MAIN=$(gh pr list --base main --head $BRANCH_NAME --json number --jq '.[].number')
+
+            if [ -z "$PR_EXISTS_MAIN" ]; then
+              gh pr create --base main --head $BRANCH_NAME --title "Release PR" --body "Automated PR with release updates." --label "semantic-release"
+            else
+              echo "PR already exists for this branch on main, PR number: $PR_EXISTS_MAIN"
+            fi
           fi
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -144,12 +144,18 @@ jobs:
 
           BRANCH_NAME=${GITHUB_REF#refs/heads/}
 
-          PR_EXISTS=$(gh pr list --base staging --head $BRANCH_NAME --json number --jq '.[].number')
+          DIFF_STAGING=$(git diff origin/staging..origin/$BRANCH_NAME)
 
-          if [ -z "$PR_EXISTS" ]; then
-            gh pr create --base staging --head $BRANCH_NAME --title "Release PR" --body "Automated PR with release updates." --label "semantic-release"
+          if [ -z "$DIFF_STAGING" ]; then
+            echo "No changes between branch $BRANCH_NAME and staging. PR will not be created for staging."
           else
-            echo "PR already exists for this branch, PR number: $PR_EXISTS"
+            PR_EXISTS_STAGING=$(gh pr list --base staging --head $BRANCH_NAME --json number --jq '.[].number')
+
+            if [ -z "$PR_EXISTS_STAGING" ]; then
+              gh pr create --base staging --head $BRANCH_NAME --title "Release PR" --body "Automated PR with release updates." --label "semantic-release"
+            else
+              echo "PR already exists for this branch on staging, PR number: $PR_EXISTS_STAGING"
+            fi
           fi
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
