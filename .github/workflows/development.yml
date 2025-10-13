@@ -20,7 +20,7 @@ concurrency:
 
 jobs:
   deploy-beta:
-    name: Deploy Beta 💥
+    name: Deploy to Beta 💥
     runs-on: ubuntu-latest
     environment: beta
     env:

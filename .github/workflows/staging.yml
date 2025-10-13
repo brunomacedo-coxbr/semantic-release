@@ -12,7 +12,7 @@ concurrency:
 
 jobs:
   deploy-dark:
-    name: Deploy Dark 💥
+    name: Deploy to Dark NonProd 💥
     runs-on: ubuntu-latest
     environment: dark-np
     env:
@@ -36,7 +36,7 @@ jobs:
         run: echo "🚀 Built s3://${{ env.VITE_STAGE }}"
 
   deploy-green:
-    name: Deploy Green 💥
+    name: Deploy to Green NonProd 💥
     runs-on: ubuntu-latest
     needs:
       - deploy-dark
