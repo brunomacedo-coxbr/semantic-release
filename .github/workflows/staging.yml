@@ -6,15 +6,14 @@ on:
       - staging
 
   # Allows you to run this workflow manually from the Actions tab
-  on:
-    workflow_dispatch:
-      inputs:
-        environment:
-          description: 'Choose the environment'
-          default: 'beta'
-          required: true
-          type: choice
-          options:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Choose the environment'
+        default: 'beta'
+        required: true
+        type: choice
+        options:
           - beta
           - dark
           - green
