@@ -1,32 +1,45 @@
-# `Turborepo` Vite starter
+# Semantic Release
 
-This is a community-maintained example. If you experience a problem, please submit a pull request with a fix. GitHub Issues will be closed.
+```mermaid
+flowchart TD
+  %% --- SECTIONS ---
+  subgraph DEV["🚧 Development (workflow_dispatch)"]
+    BETA["Beta Environment<br/><code>environment: beta</code>"]
+  end
 
-## Using this example
+  subgraph STG["🧪 Staging (branch: staging)"]
+    DARK_NP["Dark NP<br/><code>environment: dark-np</code>"]
+    GREEN_NP["Green NP<br/><code>environment: green-np</code>"]
+    DARK_NP --> GREEN_NP
+  end
 
-Run the following command:
+  subgraph PROD["🚀 Production (branch: release/*)"]
+    DARK_PROD["Dark Prod<br/><code>environment: dark-prod</code>"]
+    GREEN_PROD["Green Prod<br/><code>environment: green-prod</code>"]
+    RELEASE["Semantic Release & PR Sync<br/><code>environment: production</code>"]
 
-```sh
-npx create-turbo@latest -e design-system
+    DARK_PROD --> GREEN_PROD
+    GREEN_PROD --> RELEASE
+  end
+
+  %% --- FLOW RELATIONS ---
+  BETA --> STG
+  STG --> PROD
+
+  %% --- STYLES ---
+  classDef dev fill:#B3E5FC,stroke:#0288D1,color:#000,stroke-width:1px;
+  classDef stg fill:#FFF9C4,stroke:#FBC02D,color:#000,stroke-width:1px;
+  classDef prod fill:#C8E6C9,stroke:#2E7D32,color:#000,stroke-width:1px;
+
+  class BETA dev
+  class DARK_NP,GREEN_NP stg
+  class DARK_PROD,GREEN_PROD,RELEASE prod
 ```
 
-## What's inside?
+## Explicação
 
-This Turborepo includes the following packages and apps:
-
-### Apps and Packages
-
-- `web`: react [vite](https://vitejs.dev) ts app
-- `@design-system/ui`: a stub component library shared by `web` application
-- `@design-system/eslint-config`: shared `eslint` configurations
-- `@design-system/typescript-config`: `tsconfig.json`s used throughout the monorepo
-
-Each package and app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
+| Tipo de Deployment | Workflow File                       | Branch / Trigger           | Environments envolvidos            | Sequência                                              |
+| ------------------ | ----------------------------------- | -------------------------- | ---------------------------------- | ------------------------------------------------------ |
+| **Development**    | `.github/workflows/development.yml` | `workflow_dispatch` manual | `beta`                             | único job                                              |
+| **Staging**        | `.github/workflows/staging.yml`     | `push → staging`           | `dark-np → green-np`               | dark antes de green                                    |
+| **Production**     | `.github/workflows/production.yml`  | `push → release/*`         | `dark-prod → green-prod → release` | executa dark, depois green, e por fim semantic-release |
