@@ -1,3 +1,11 @@
+## [2.11.11](https://github.com/brunomacedo-coxbr/semantic-release/compare/v2.11.10...v2.11.11) (2025-10-14)
+
+
+### Bug Fixes
+
+* list paths ([7214e18](https://github.com/brunomacedo-coxbr/semantic-release/commit/7214e182ae10c48885a9aa078610fc639e5c2bc1))
+* list paths ([f0b68c9](https://github.com/brunomacedo-coxbr/semantic-release/commit/f0b68c9d42161b5b92105968bf6cce8daf4ba516))
+
 ## [2.11.10](https://github.com/brunomacedo-coxbr/semantic-release/compare/v2.11.9...v2.11.10) (2025-10-13)
 
 
