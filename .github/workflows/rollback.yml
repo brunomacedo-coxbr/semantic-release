@@ -30,7 +30,7 @@ jobs:
           echo ">>>>>>>"
           echo "list paths"
 
-          la
+          ls -la
 
           echo ">>>>>>>"
 
