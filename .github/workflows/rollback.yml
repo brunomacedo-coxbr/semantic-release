@@ -27,6 +27,13 @@ jobs:
           # Fetch the selected tag from the repository
           git fetch origin $VERSION
 
+          echo ">>>>>>>"
+          echo "list paths"
+
+          la
+
+          echo ">>>>>>>"
+
           # Check if the folder for the version exists
           if [ -d "./releases/$VERSION" ]; then
             echo "Found build files for version $VERSION"
@@ -45,6 +52,8 @@ jobs:
 
   deploy-green:
     name: Rollback Green Prod
+    needs:
+      - deploy-dark
     runs-on: ubuntu-latest
     environment: green-prod
     steps:
