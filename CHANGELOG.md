@@ -1,3 +1,10 @@
+# [2.12.0](https://github.com/brunomacedo-coxbr/semantic-release/compare/v2.11.12...v2.12.0) (2025-10-27)
+
+
+### Features
+
+*  workflows for listing and rolling back versions ([de47e2e](https://github.com/brunomacedo-coxbr/semantic-release/commit/de47e2e71a9651ff69d080ab8845e9bd92906e99))
+
 ## [2.11.12](https://github.com/brunomacedo-coxbr/semantic-release/compare/v2.11.11...v2.11.12) (2025-10-27)
 
 
