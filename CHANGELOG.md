@@ -1,3 +1,10 @@
+## [2.11.12](https://github.com/brunomacedo-coxbr/semantic-release/compare/v2.11.11...v2.11.12) (2025-10-27)
+
+
+### Bug Fixes
+
+* enhance rollback workflow and prepare artifacts ([b29885e](https://github.com/brunomacedo-coxbr/semantic-release/commit/b29885ee034e18d85b49510515f6db19c363c31e))
+
 ## [2.11.11](https://github.com/brunomacedo-coxbr/semantic-release/compare/v2.11.10...v2.11.11) (2025-10-14)
 
 

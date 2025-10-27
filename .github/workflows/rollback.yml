@@ -19,28 +19,35 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Fetch Build Files for Version 🎒
+      - name: Download rollback artifact 📥
+        uses: dawidd6/action-download-artifact@v6
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          name: rollback-${{ github.event.inputs.version }}
+          path: ./rollback-files
+          workflow_search: true
+          search_artifacts: true
+          if_no_artifact_found: fail
+
+      - name: Prepare rollback files 🎒
         run: |
           VERSION=${{ github.event.inputs.version }}
           echo "Rolling back to version $VERSION"
 
-          # Fetch the selected tag from the repository
-          git fetch origin $VERSION
+          # Create dist directory if it doesn't exist
+          mkdir -p packages/ui/dist
 
-          echo ">>>>>>>"
-          echo "list paths"
+          # Copy rollback files to dist directory
+          if [ -d "./rollback-files" ] && [ "$(ls -A ./rollback-files)" ]; then
+            echo "Found rollback files for version $VERSION"
+            cp -r ./rollback-files/* ./packages/ui/dist/
+            echo "✅ Rollback files copied successfully"
 
-          ls -la
-
-          echo ">>>>>>>"
-
-          # Check if the folder for the version exists
-          if [ -d "./releases/$VERSION" ]; then
-            echo "Found build files for version $VERSION"
-            # Copy the build files back to the build directory (or wherever necessary)
-            cp -r ./releases/$VERSION/* ./packages/ui/dist/
+            # Verify files were copied
+            echo "Contents of packages/ui/dist/:"
+            ls -la packages/ui/dist/
           else
-            echo "No build files found for version $VERSION!"
+            echo "❌ No rollback files found for version $VERSION!"
             exit 1
           fi
 
@@ -62,21 +69,35 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Fetch Build Files for Version 🎒
+      - name: Download rollback artifact 📥
+        uses: dawidd6/action-download-artifact@v6
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          name: rollback-${{ github.event.inputs.version }}
+          path: ./rollback-files
+          workflow_search: true
+          search_artifacts: true
+          if_no_artifact_found: fail
+
+      - name: Prepare rollback files 🎒
         run: |
           VERSION=${{ github.event.inputs.version }}
           echo "Rolling back to version $VERSION"
 
-          # Fetch the selected tag from the repository
-          git fetch origin $VERSION
+          # Create dist directory if it doesn't exist
+          mkdir -p packages/ui/dist
 
-          # Check if the folder for the version exists
-          if [ -d "./releases/$VERSION" ]; then
-            echo "Found build files for version $VERSION"
-            # Copy the build files back to the build directory (or wherever necessary)
-            cp -r ./releases/$VERSION/* ./packages/ui/dist/
+          # Copy rollback files to dist directory
+          if [ -d "./rollback-files" ] && [ "$(ls -A ./rollback-files)" ]; then
+            echo "Found rollback files for version $VERSION"
+            cp -r ./rollback-files/* ./packages/ui/dist/
+            echo "✅ Rollback files copied successfully"
+
+            # Verify files were copied
+            echo "Contents of packages/ui/dist/:"
+            ls -la packages/ui/dist/
           else
-            echo "No build files found for version $VERSION!"
+            echo "❌ No rollback files found for version $VERSION!"
             exit 1
           fi
 
