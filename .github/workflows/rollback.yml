@@ -4,13 +4,132 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: "Rollback version (Tag)"
+        description: "Rollback version (use 'latest' for most recent, or run 'List Available Rollback Versions' workflow first)"
         required: true
         type: string
+        default: "latest"
 
 jobs:
+  resolve-version:
+    name: Resolve Rollback Version 🔍
+    runs-on: ubuntu-latest
+    outputs:
+      target-version: ${{ steps.resolve.outputs.target-version }}
+      available-versions: ${{ steps.resolve.outputs.available-versions }}
+    steps:
+      - name: Checkout Repository 🛎️
+        uses: actions/checkout@v4
+
+      - name: Resolve target version and list available 🎯
+        id: resolve
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const inputVersion = '${{ github.event.inputs.version }}';
+            const { owner, repo } = context.repo;
+
+            console.log(`🔍 Looking for rollback artifacts (input: ${inputVersion})`);
+
+            // Get production workflow
+            const workflows = await github.rest.actions.listRepoWorkflows({
+              owner,
+              repo
+            });
+
+            const productionWorkflow = workflows.data.workflows.find(w =>
+              w.name === 'Deploy Production' || w.path.includes('production.yml')
+            );
+
+            if (!productionWorkflow) {
+              throw new Error('❌ Production workflow not found');
+            }
+
+            const rollbackVersions = [];
+
+            // Search through workflow runs
+            for await (const response of github.paginate.iterator(
+              github.rest.actions.listWorkflowRuns,
+              {
+                owner,
+                repo,
+                workflow_id: productionWorkflow.id,
+                per_page: 50  // Limit search for performance
+              }
+            )) {
+              for (const run of response.data) {
+                if (run.conclusion !== 'success') continue;
+
+                try {
+                  const artifacts = await github.rest.actions.listWorkflowRunArtifacts({
+                    owner,
+                    repo,
+                    run_id: run.id
+                  });
+
+                  const rollbackArtifacts = artifacts.data.artifacts.filter(artifact =>
+                    artifact.name.startsWith('rollback-') && !artifact.expired
+                  );
+
+                  for (const artifact of rollbackArtifacts) {
+                    const version = artifact.name.replace('rollback-', '');
+                    rollbackVersions.push({
+                      version,
+                      runId: run.id,
+                      createdAt: artifact.created_at
+                    });
+                  }
+                } catch (error) {
+                  continue;
+                }
+              }
+
+              // Stop after finding at least 20 versions or searching 10 pages
+              if (rollbackVersions.length >= 20 || response.data.length === 0) {
+                break;
+              }
+            }
+
+            // Sort by semantic version (newest first)
+            rollbackVersions.sort((a, b) => {
+              const parseVersion = (v) => {
+                const parts = v.split('.').map(n => parseInt(n) || 0);
+                return parts[0] * 10000 + parts[1] * 100 + parts[2];
+              };
+              return parseVersion(b.version) - parseVersion(a.version);
+            });
+
+            console.log('\n📋 Available rollback versions:');
+            rollbackVersions.forEach((v, i) => {
+              console.log(`${i + 1}. ${v.version} (${new Date(v.createdAt).toISOString().split('T')[0]})`);
+            });
+
+            // Resolve target version
+            let targetVersion;
+            if (inputVersion === 'latest' || inputVersion === '') {
+              targetVersion = rollbackVersions[0]?.version;
+              if (!targetVersion) {
+                throw new Error('❌ No rollback artifacts found');
+              }
+              console.log(`\n✅ Using latest version: ${targetVersion}`);
+            } else {
+              const found = rollbackVersions.find(v => v.version === inputVersion);
+              if (!found) {
+                console.log(`\n❌ Version ${inputVersion} not found in available artifacts`);
+                console.log(`Available versions: ${rollbackVersions.map(v => v.version).join(', ')}`);
+                throw new Error(`Version ${inputVersion} not available for rollback`);
+              }
+              targetVersion = inputVersion;
+              console.log(`\n✅ Using specified version: ${targetVersion}`);
+            }
+
+            // Set outputs
+            core.setOutput('target-version', targetVersion);
+            core.setOutput('available-versions', rollbackVersions.map(v => v.version).join(', '));
+
   deploy-dark:
     name: Rollback Dark Prod
+    needs: resolve-version
     runs-on: ubuntu-latest
     environment: dark-prod
     steps:
@@ -19,11 +138,16 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Display rollback information ℹ️
+        run: |
+          echo "🎯 Rolling back to version: ${{ needs.resolve-version.outputs.target-version }}"
+          echo "📋 Available versions: ${{ needs.resolve-version.outputs.available-versions }}"
+
       - name: Download rollback artifact 📥
         uses: dawidd6/action-download-artifact@v6
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          name: rollback-${{ github.event.inputs.version }}
+          name: rollback-${{ needs.resolve-version.outputs.target-version }}
           path: ./rollback-files
           workflow_search: true
           search_artifacts: true
@@ -31,7 +155,7 @@ jobs:
 
       - name: Prepare rollback files 🎒
         run: |
-          VERSION=${{ github.event.inputs.version }}
+          VERSION=${{ needs.resolve-version.outputs.target-version }}
           echo "Rolling back to version $VERSION"
 
           # Create dist directory if it doesn't exist
@@ -53,6 +177,7 @@ jobs:
 
       - name: Deploy the Rollback Version 🚀
         run: |
+          VERSION=${{ needs.resolve-version.outputs.target-version }}
           echo "Deploying version $VERSION to dark-prod"
           # Insert your deployment logic here, for example:
           # ./deploy.sh or whatever process is needed to deploy the files
@@ -60,6 +185,7 @@ jobs:
   deploy-green:
     name: Rollback Green Prod
     needs:
+      - resolve-version
       - deploy-dark
     runs-on: ubuntu-latest
     environment: green-prod
@@ -69,11 +195,16 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Display rollback information ℹ️
+        run: |
+          echo "🎯 Rolling back to version: ${{ needs.resolve-version.outputs.target-version }}"
+          echo "📋 Available versions: ${{ needs.resolve-version.outputs.available-versions }}"
+
       - name: Download rollback artifact 📥
         uses: dawidd6/action-download-artifact@v6
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          name: rollback-${{ github.event.inputs.version }}
+          name: rollback-${{ needs.resolve-version.outputs.target-version }}
           path: ./rollback-files
           workflow_search: true
           search_artifacts: true
@@ -81,7 +212,7 @@ jobs:
 
       - name: Prepare rollback files 🎒
         run: |
-          VERSION=${{ github.event.inputs.version }}
+          VERSION=${{ needs.resolve-version.outputs.target-version }}
           echo "Rolling back to version $VERSION"
 
           # Create dist directory if it doesn't exist
@@ -103,6 +234,7 @@ jobs:
 
       - name: Deploy the Rollback Version 🚀
         run: |
+          VERSION=${{ needs.resolve-version.outputs.target-version }}
           echo "Deploying version $VERSION to green-prod"
           # Insert your deployment logic here, for example:
           # ./deploy.sh or whatever process is needed to deploy the files

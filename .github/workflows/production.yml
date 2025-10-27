@@ -168,11 +168,6 @@ jobs:
         env:
           HUSKY: 0
 
-      - name: Build 📚
-        run: pnpm build
-        env:
-          HUSKY: 0
-
       - name: Download build artifact for release 📥
         uses: actions/download-artifact@v4
         with:

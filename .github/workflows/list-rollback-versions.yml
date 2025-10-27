@@ -1,0 +1,145 @@
+name: List Available Rollback Versions
+
+on:
+  workflow_dispatch:
+
+jobs:
+  list-versions:
+    name: List Available Rollback Versions 📋
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository 🛎️
+        uses: actions/checkout@v4
+
+      - name: List available rollback artifacts 🔍
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { owner, repo } = context.repo;
+
+            // Get all workflow runs for the production workflow
+            const workflows = await github.rest.actions.listRepoWorkflows({
+              owner,
+              repo
+            });
+
+            const productionWorkflow = workflows.data.workflows.find(w =>
+              w.name === 'Deploy Production' || w.path.includes('production.yml')
+            );
+
+            if (!productionWorkflow) {
+              console.log('❌ Production workflow not found');
+              return;
+            }
+
+            console.log(`🔍 Searching for rollback artifacts in workflow: ${productionWorkflow.name}`);
+
+            const rollbackVersions = [];
+
+            // Get workflow runs (paginate through all)
+            for await (const response of github.paginate.iterator(
+              github.rest.actions.listWorkflowRuns,
+              {
+                owner,
+                repo,
+                workflow_id: productionWorkflow.id,
+                per_page: 100
+              }
+            )) {
+              for (const run of response.data) {
+                if (run.conclusion !== 'success') continue;
+
+                try {
+                  // Get artifacts for this run
+                  const artifacts = await github.rest.actions.listWorkflowRunArtifacts({
+                    owner,
+                    repo,
+                    run_id: run.id
+                  });
+
+                  // Find rollback artifacts
+                  const rollbackArtifacts = artifacts.data.artifacts.filter(artifact =>
+                    artifact.name.startsWith('rollback-') && !artifact.expired
+                  );
+
+                  for (const artifact of rollbackArtifacts) {
+                    const version = artifact.name.replace('rollback-', '');
+                    const createdAt = new Date(artifact.created_at);
+                    const expiresAt = new Date(artifact.created_at);
+                    expiresAt.setDate(expiresAt.getDate() + 365); // 365 days retention
+
+                    rollbackVersions.push({
+                      version,
+                      createdAt: createdAt.toISOString().split('T')[0],
+                      expiresAt: expiresAt.toISOString().split('T')[0],
+                      runId: run.id,
+                      runUrl: run.html_url,
+                      artifactId: artifact.id,
+                      sizeBytes: artifact.size_in_bytes
+                    });
+                  }
+                } catch (error) {
+                  // Skip runs where we can't access artifacts
+                  continue;
+                }
+              }
+            }
+
+            // Sort by version (semantic versioning)
+            rollbackVersions.sort((a, b) => {
+              const parseVersion = (v) => {
+                const parts = v.split('.').map(n => parseInt(n) || 0);
+                return parts[0] * 10000 + parts[1] * 100 + parts[2];
+              };
+              return parseVersion(b.version) - parseVersion(a.version);
+            });
+
+            console.log('\n🎯 Available Rollback Versions:');
+            console.log('=====================================');
+
+            if (rollbackVersions.length === 0) {
+              console.log('❌ No rollback artifacts found');
+              return;
+            }
+
+            rollbackVersions.forEach((item, index) => {
+              const sizeKB = Math.round(item.sizeBytes / 1024);
+              console.log(`${index + 1}. Version: ${item.version}`);
+              console.log(`   📅 Created: ${item.createdAt}`);
+              console.log(`   ⏰ Expires: ${item.expiresAt}`);
+              console.log(`   📦 Size: ${sizeKB} KB`);
+              console.log(`   🔗 Run: ${item.runUrl}`);
+              console.log('   ---');
+            });
+
+            console.log('\n📋 Summary:');
+            console.log(`Total available versions: ${rollbackVersions.length}`);
+            console.log(`Latest version: ${rollbackVersions[0]?.version || 'None'}`);
+            console.log(`Oldest version: ${rollbackVersions[rollbackVersions.length - 1]?.version || 'None'}`);
+
+            // Create a summary as step output
+            const summary = rollbackVersions.map(v => v.version).join(', ');
+            console.log(`\n🏷️ Available versions: ${summary}`);
+
+            // Set output for potential use in other workflows
+            core.setOutput('versions', JSON.stringify(rollbackVersions.map(v => v.version)));
+            core.setOutput('latest_version', rollbackVersions[0]?.version || '');
+            core.setOutput('count', rollbackVersions.length);
+
+      - name: Create summary comment 📝
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            // This will show in the workflow run summary
+            const summary = `
+            ## 🎯 Available Rollback Versions
+
+            Use any of these versions in the **Rollback Production** workflow:
+
+            | Version | Created Date | Status |
+            |---------|--------------|--------|
+            `;
+
+            console.log('📊 Check the workflow summary for a formatted list of available versions!');
