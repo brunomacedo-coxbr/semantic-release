@@ -21,7 +21,7 @@ jobs:
     env:
       VITE_STAGE: "${{ vars.VITE_STAGE }}"
     outputs:
-      build-version: ${{ steps.get-version.outputs.version }}
+      build-id: ${{ steps.generate-id.outputs.build-id }}
       artifact-id: ${{ steps.upload-build.outputs.artifact-id }}
 
     steps:
@@ -43,27 +43,13 @@ jobs:
         env:
           HUSKY: 0
 
-      - name: Determine next version 🏷️
-        id: get-version
+      - name: Generate build identifier �
+        id: generate-id
         run: |
-          # Run semantic-release in dry-run mode to get next version
-          NEXT_VERSION=$(pnpm semantic-release --dry-run --no-ci | grep -E "Published release.*on.*channel" | sed -n 's/.*Published release \([^ ]*\) on.*/\1/p' | tail -1)
-
-          if [ -z "$NEXT_VERSION" ]; then
-            # If no version found, try alternative approach
-            NEXT_VERSION=$(pnpm semantic-release --dry-run --no-ci | grep -E "The next release version is" | sed -n 's/.*The next release version is \([^ ]*\).*/\1/p' | tail -1)
-          fi
-
-          if [ -z "$NEXT_VERSION" ]; then
-            # Fallback to current version with timestamp
-            CURRENT_VERSION=$(node -p "require('./package.json').version")
-            NEXT_VERSION="${CURRENT_VERSION}-$(date +%Y%m%d%H%M%S)"
-          fi
-
-          echo "Next version: $NEXT_VERSION"
-          echo "version=$NEXT_VERSION" >> $GITHUB_OUTPUT
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Create unique build identifier using timestamp and short commit hash
+          BUILD_ID="$(date +%Y%m%d%H%M%S)-${GITHUB_SHA:0:7}"
+          echo "Generated build ID: $BUILD_ID"
+          echo "build-id=$BUILD_ID" >> $GITHUB_OUTPUT
 
       - name: Build application 📚
         run: pnpm build
@@ -73,16 +59,16 @@ jobs:
       - name: Create build archive 📦
         run: |
           cd packages/ui
-          # Create build archive with version in filename
-          tar -czf "build-${{ steps.get-version.outputs.version }}.tar.gz" dist/
+          # Create build archive with build ID
+          tar -czf "build-${{ steps.generate-id.outputs.build-id }}.tar.gz" dist/
           ls -la build-*.tar.gz
 
       - name: Upload build artifact 🚀
         id: upload-build
         uses: actions/upload-artifact@v4
         with:
-          name: build-${{ steps.get-version.outputs.version }}
-          path: packages/ui/build-${{ steps.get-version.outputs.version }}.tar.gz
+          name: build-${{ steps.generate-id.outputs.build-id }}
+          path: packages/ui/build-${{ steps.generate-id.outputs.build-id }}.tar.gz
           retention-days: 90
           compression-level: 6
 
@@ -110,14 +96,17 @@ jobs:
       - name: Download build artifact �
         uses: actions/download-artifact@v4
         with:
-          name: build-${{ needs.deploy-dark.outputs.build-version }}
+          name: build-${{ needs.deploy-dark.outputs.build-id }}
           path: ./build-artifacts
 
       - name: Extract and prepare build �
         run: |
           cd build-artifacts
           # Extract the build archive
-          tar -xzf build-${{ needs.deploy-dark.outputs.build-version }}.tar.gz
+          tar -xzf build-${{ needs.deploy-dark.outputs.build-id }}.tar.gz
+
+          # List contents for debugging
+          ls -la
 
           # Verify extraction
           ls -la dist/
@@ -130,7 +119,7 @@ jobs:
 
       - name: Deploy to Green Prod 🚀
         run: |
-          echo "🚀 Deploying build ${{ needs.deploy-dark.outputs.build-version }} to green-prod"
+          echo "🚀 Deploying build ${{ needs.deploy-dark.outputs.build-id }} to green-prod"
           echo "Using artifact from: ${{ needs.deploy-dark.outputs.artifact-id }}"
           # Add your actual deployment logic here
 
@@ -171,36 +160,40 @@ jobs:
       - name: Download build artifact for release 📥
         uses: actions/download-artifact@v4
         with:
-          name: build-${{ needs.deploy-dark.outputs.build-version }}
-          path: ./release-artifacts
+          name: build-${{ needs.deploy-dark.outputs.build-id }}
+          path: ./build-artifacts
 
-      - name: Prepare versioned build for rollback 📦
+      - name: Extract build for semantic-release 📦
         run: |
-          VERSION=${{ needs.deploy-dark.outputs.build-version }}
+          cd build-artifacts
+          # Extract build to packages/ui/dist for semantic-release
+          tar -xzf build-${{ needs.deploy-dark.outputs.build-id }}.tar.gz
 
-          # Create releases directory if it doesn't exist
-          mkdir -p releases/$VERSION
+          # Copy to expected location
+          mkdir -p ../packages/ui/dist
+          cp -r dist/* ../packages/ui/dist/
 
-          # Extract and copy build files to versioned directory
-          cd release-artifacts
-          tar -xzf build-$VERSION.tar.gz
-          cp -r dist/* ../releases/$VERSION/
+          echo "✅ Build extracted for semantic-release"
 
-          cd ..
-          echo "✅ Build prepared for version $VERSION"
-          ls -la releases/$VERSION/
+      - name: Release 🚀
+        id: semantic-release
+        run: |
+          echo "Running semantic-release..."
+          npx semantic-release
 
-      - name: Release
-        run: npx semantic-release
+          # Capture the released version from package.json after semantic-release
+          RELEASED_VERSION=$(node -p "require('./package.json').version")
+          echo "Released version: $RELEASED_VERSION"
+          echo "released-version=$RELEASED_VERSION" >> $GITHUB_OUTPUT
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Create rollback artifact 🎯
+      - name: Create versioned build artifact 🎯
         uses: actions/upload-artifact@v4
         with:
-          name: rollback-${{ needs.deploy-dark.outputs.build-version }}
-          path: releases/${{ needs.deploy-dark.outputs.build-version }}/
-          retention-days: 365
+          name: build-${{ steps.semantic-release.outputs.released-version }}
+          path: packages/ui/dist/
+          retention-days: 90
           compression-level: 9
 
       - name: Create PR from release to main 🚀

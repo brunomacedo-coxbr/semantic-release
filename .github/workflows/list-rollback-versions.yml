@@ -58,16 +58,17 @@ jobs:
                     run_id: run.id
                   });
 
-                  // Find rollback artifacts
-                  const rollbackArtifacts = artifacts.data.artifacts.filter(artifact =>
-                    artifact.name.startsWith('rollback-') && !artifact.expired
-                  );
+                  // Find versioned build artifacts (format: build-1.2.3)
+                  const versionedBuilds = artifacts.data.artifacts.filter(artifact => {
+                    const match = artifact.name.match(/^build-(\d+\.\d+\.\d+.*)$/);
+                    return match && !artifact.expired;
+                  });
 
-                  for (const artifact of rollbackArtifacts) {
-                    const version = artifact.name.replace('rollback-', '');
+                  for (const artifact of versionedBuilds) {
+                    const version = artifact.name.replace('build-', '');
                     const createdAt = new Date(artifact.created_at);
                     const expiresAt = new Date(artifact.created_at);
-                    expiresAt.setDate(expiresAt.getDate() + 365); // 365 days retention
+                    expiresAt.setDate(expiresAt.getDate() + 90); // 90 days retention
 
                     rollbackVersions.push({
                       version,

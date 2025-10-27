@@ -47,15 +47,15 @@ Este repositório possui um sistema otimizado de deploy e rollback com artefatos
 ### Deploy Production Pipeline
 
 ```
-deploy-dark (Build) → deploy-green (Reuso) → release (Semantic Release)
-                ↓                              ↓
-        Cria artefato build             Cria artefato rollback
+deploy-dark (Build) → deploy-green (Reuso) → release (Semantic Release + Versioning)
+        ↓                  ↓                            ↓
+  Artefato temporário  Reusa build            Cria artefato versionado
 ```
 
 ### Artefatos Criados
 
-- **Build artifacts**: `build-{version}` (90 dias de retenção)
-- **Rollback artifacts**: `rollback-{version}` (365 dias de retenção)
+- **Build temporários**: `build-{timestamp}-{hash}` (90 dias) - Usados durante o pipeline
+- **Build versionados**: `build-{version}` (90 dias) - Criados após semantic-release com versão real
 
 ### Benefícios
 
@@ -69,12 +69,12 @@ deploy-dark (Build) → deploy-green (Reuso) → release (Semantic Release)
 
 ```
 Workflow Run #123 (v2.11.11)
-├── build-2.11.11 (usado durante deploy)
-└── rollback-2.11.11 (usado para rollback)
+├── build-20251027143022-a1b2c3d (temporário - usado durante pipeline)
+└── build-2.11.11 (versionado - usado para rollback)
 
 Workflow Run #122 (v2.11.10)
-├── build-2.11.10 (expirado após 90 dias)
-└── rollback-2.11.10 (disponível por 365 dias)
+├── build-20251026120015-x9y8z7w (expirado após 90 dias)
+└── build-2.11.10 (disponível por 90 dias para rollback)
 ```
 
 ## 🚨 Troubleshooting
@@ -103,4 +103,4 @@ Para sempre fazer rollback para a versão mais recente, use `latest` como versã
 
 - **Logs**: Cada workflow mostra versões disponíveis
 - **Artefatos**: Visíveis na aba "Artifacts" de cada workflow run
-- **Retenção**: Builds (90d), Rollbacks (365d)
+- **Retenção**: Builds temporários (90d), Builds versionados (90d)
