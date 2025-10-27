@@ -20,6 +20,9 @@ jobs:
     environment: dark-prod
     env:
       VITE_STAGE: "${{ vars.VITE_STAGE }}"
+    outputs:
+      build-version: ${{ steps.get-version.outputs.version }}
+      artifact-id: ${{ steps.upload-build.outputs.artifact-id }}
 
     steps:
       - name: Checkout 🛎️
@@ -35,8 +38,59 @@ jobs:
       - name: Setup pnpm 🔧
         uses: pnpm/action-setup@v4
 
-      - name: Build
-        run: echo "🚀 Built"
+      - name: Install dependencies 🎒
+        run: pnpm install --prefer-offline --frozen-lockfile
+        env:
+          HUSKY: 0
+
+      - name: Determine next version 🏷️
+        id: get-version
+        run: |
+          # Run semantic-release in dry-run mode to get next version
+          NEXT_VERSION=$(pnpm semantic-release --dry-run --no-ci | grep -E "Published release.*on.*channel" | sed -n 's/.*Published release \([^ ]*\) on.*/\1/p' | tail -1)
+
+          if [ -z "$NEXT_VERSION" ]; then
+            # If no version found, try alternative approach
+            NEXT_VERSION=$(pnpm semantic-release --dry-run --no-ci | grep -E "The next release version is" | sed -n 's/.*The next release version is \([^ ]*\).*/\1/p' | tail -1)
+          fi
+
+          if [ -z "$NEXT_VERSION" ]; then
+            # Fallback to current version with timestamp
+            CURRENT_VERSION=$(node -p "require('./package.json').version")
+            NEXT_VERSION="${CURRENT_VERSION}-$(date +%Y%m%d%H%M%S)"
+          fi
+
+          echo "Next version: $NEXT_VERSION"
+          echo "version=$NEXT_VERSION" >> $GITHUB_OUTPUT
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build application 📚
+        run: pnpm build
+        env:
+          HUSKY: 0
+
+      - name: Create build archive 📦
+        run: |
+          cd packages/ui
+          # Create build archive with version in filename
+          tar -czf "build-${{ steps.get-version.outputs.version }}.tar.gz" dist/
+          ls -la build-*.tar.gz
+
+      - name: Upload build artifact 🚀
+        id: upload-build
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-${{ steps.get-version.outputs.version }}
+          path: packages/ui/build-${{ steps.get-version.outputs.version }}.tar.gz
+          retention-days: 90
+          compression-level: 6
+
+      - name: Deploy to Dark Prod 🚀
+        run: |
+          echo "🚀 Deploying build ${{ steps.get-version.outputs.version }} to dark-prod"
+          echo "Artifact ID: ${{ steps.upload-build.outputs.artifact-id }}"
+          # Add your actual deployment logic here
 
   deploy-green:
     name: Deploy to Green Prod 💥
@@ -53,19 +107,35 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup node 🚩
-        uses: actions/setup-node@v4
+      - name: Download build artifact �
+        uses: actions/download-artifact@v4
         with:
-          node-version-file: ".nvmrc"
+          name: build-${{ needs.deploy-dark.outputs.build-version }}
+          path: ./build-artifacts
 
-      - name: Setup pnpm 🔧
-        uses: pnpm/action-setup@v4
+      - name: Extract and prepare build �
+        run: |
+          cd build-artifacts
+          # Extract the build archive
+          tar -xzf build-${{ needs.deploy-dark.outputs.build-version }}.tar.gz
 
-      - name: Build
-        run: echo "🚀 Built"
+          # Verify extraction
+          ls -la dist/
+
+          # Copy to expected location for deployment
+          mkdir -p ../packages/ui/dist
+          cp -r dist/* ../packages/ui/dist/
+
+          echo "✅ Build extracted and prepared for deployment"
+
+      - name: Deploy to Green Prod 🚀
+        run: |
+          echo "🚀 Deploying build ${{ needs.deploy-dark.outputs.build-version }} to green-prod"
+          echo "Using artifact from: ${{ needs.deploy-dark.outputs.artifact-id }}"
+          # Add your actual deployment logic here
 
   release:
-    name: Generate Release 💥
+    name: Semantic Release 💥
     runs-on: ubuntu-latest
     environment: production
     needs:
@@ -103,20 +173,40 @@ jobs:
         env:
           HUSKY: 0
 
-      - name: Semantic Release 💥
+      - name: Download build artifact for release 📥
+        uses: actions/download-artifact@v4
+        with:
+          name: build-${{ needs.deploy-dark.outputs.build-version }}
+          path: ./release-artifacts
+
+      - name: Prepare versioned build for rollback 📦
+        run: |
+          VERSION=${{ needs.deploy-dark.outputs.build-version }}
+
+          # Create releases directory if it doesn't exist
+          mkdir -p releases/$VERSION
+
+          # Extract and copy build files to versioned directory
+          cd release-artifacts
+          tar -xzf build-$VERSION.tar.gz
+          cp -r dist/* ../releases/$VERSION/
+
+          cd ..
+          echo "✅ Build prepared for version $VERSION"
+          ls -la releases/$VERSION/
+
+      - name: Release
         run: npx semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Store build artifacts
-        run: |
-          VERSION=$(git describe --tags)  # Get the tag name (version)
-          echo "Tag Name: $VERSION"
-
-          # Create a versioned directory and store the dist files there
-          mkdir -p ./releases/$VERSION
-          cp -r ./packages/ui/dist/* ./releases/$VERSION/
-          echo "Build files stored for version $VERSION"
+      - name: Create rollback artifact 🎯
+        uses: actions/upload-artifact@v4
+        with:
+          name: rollback-${{ needs.deploy-dark.outputs.build-version }}
+          path: releases/${{ needs.deploy-dark.outputs.build-version }}/
+          retention-days: 365
+          compression-level: 9
 
       - name: Create PR from release to main 🚀
         run: |
