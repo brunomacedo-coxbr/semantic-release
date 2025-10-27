@@ -67,12 +67,14 @@ jobs:
                     run_id: run.id
                   });
 
-                  const rollbackArtifacts = artifacts.data.artifacts.filter(artifact =>
-                    artifact.name.startsWith('rollback-') && !artifact.expired
-                  );
+                  // Look for versioned build artifacts (format: build-1.2.3)
+                  const versionedArtifacts = artifacts.data.artifacts.filter(artifact => {
+                    const match = artifact.name.match(/^build-(\d+\.\d+\.\d+.*)$/);
+                    return match && !artifact.expired;
+                  });
 
-                  for (const artifact of rollbackArtifacts) {
-                    const version = artifact.name.replace('rollback-', '');
+                  for (const artifact of versionedArtifacts) {
+                    const version = artifact.name.replace('build-', '');
                     rollbackVersions.push({
                       version,
                       runId: run.id,
@@ -143,12 +145,12 @@ jobs:
           echo "🎯 Rolling back to version: ${{ needs.resolve-version.outputs.target-version }}"
           echo "📋 Available versions: ${{ needs.resolve-version.outputs.available-versions }}"
 
-      - name: Download rollback artifact 📥
+      - name: Download build artifact 📥
         uses: dawidd6/action-download-artifact@v6
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          name: rollback-${{ needs.resolve-version.outputs.target-version }}
-          path: ./rollback-files
+          name: build-${{ needs.resolve-version.outputs.target-version }}
+          path: ./build-files
           workflow_search: true
           search_artifacts: true
           if_no_artifact_found: fail
@@ -161,17 +163,17 @@ jobs:
           # Create dist directory if it doesn't exist
           mkdir -p packages/ui/dist
 
-          # Copy rollback files to dist directory
-          if [ -d "./rollback-files" ] && [ "$(ls -A ./rollback-files)" ]; then
-            echo "Found rollback files for version $VERSION"
-            cp -r ./rollback-files/* ./packages/ui/dist/
-            echo "✅ Rollback files copied successfully"
+          # Copy build files to dist directory
+          if [ -d "./build-files" ] && [ "$(ls -A ./build-files)" ]; then
+            echo "Found build files for version $VERSION"
+            cp -r ./build-files/* ./packages/ui/dist/
+            echo "✅ Build files copied successfully"
 
             # Verify files were copied
             echo "Contents of packages/ui/dist/:"
             ls -la packages/ui/dist/
           else
-            echo "❌ No rollback files found for version $VERSION!"
+            echo "❌ No build files found for version $VERSION!"
             exit 1
           fi
 
@@ -200,12 +202,12 @@ jobs:
           echo "🎯 Rolling back to version: ${{ needs.resolve-version.outputs.target-version }}"
           echo "📋 Available versions: ${{ needs.resolve-version.outputs.available-versions }}"
 
-      - name: Download rollback artifact 📥
+      - name: Download build artifact 📥
         uses: dawidd6/action-download-artifact@v6
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          name: rollback-${{ needs.resolve-version.outputs.target-version }}
-          path: ./rollback-files
+          name: build-${{ needs.resolve-version.outputs.target-version }}
+          path: ./build-files
           workflow_search: true
           search_artifacts: true
           if_no_artifact_found: fail
@@ -218,17 +220,17 @@ jobs:
           # Create dist directory if it doesn't exist
           mkdir -p packages/ui/dist
 
-          # Copy rollback files to dist directory
-          if [ -d "./rollback-files" ] && [ "$(ls -A ./rollback-files)" ]; then
-            echo "Found rollback files for version $VERSION"
-            cp -r ./rollback-files/* ./packages/ui/dist/
-            echo "✅ Rollback files copied successfully"
+          # Copy build files to dist directory
+          if [ -d "./build-files" ] && [ "$(ls -A ./build-files)" ]; then
+            echo "Found build files for version $VERSION"
+            cp -r ./build-files/* ./packages/ui/dist/
+            echo "✅ Build files copied successfully"
 
             # Verify files were copied
             echo "Contents of packages/ui/dist/:"
             ls -la packages/ui/dist/
           else
-            echo "❌ No rollback files found for version $VERSION!"
+            echo "❌ No build files found for version $VERSION!"
             exit 1
           fi
 
