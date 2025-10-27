@@ -1,3 +1,10 @@
+# [2.13.0](https://github.com/brunomacedo-coxbr/semantic-release/compare/v2.12.0...v2.13.0) (2025-10-27)
+
+
+### Features
+
+* add foreground color variables for light and dark themes ([750bf9b](https://github.com/brunomacedo-coxbr/semantic-release/commit/750bf9bb5c41a26a460b9b467499244b70ad5828))
+
 # [2.12.0](https://github.com/brunomacedo-coxbr/semantic-release/compare/v2.11.12...v2.12.0) (2025-10-27)
 
 
