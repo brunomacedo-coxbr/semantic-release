@@ -197,53 +197,23 @@ jobs:
           compression-level: 9
 
       - name: Create PR from release to main 🚀
-        run: |
-          git config --global user.email "actions@github.com"
-          git config --global user.name "GitHub Actions"
-          git fetch origin $GITHUB_REF
-
-          echo "GITHUB_REF: $GITHUB_REF"
-
-          BRANCH_NAME=${GITHUB_REF#refs/heads/}
-
-          DIFF_MAIN=$(git diff origin/main..origin/$BRANCH_NAME)
-
-          if [ -z "$DIFF_MAIN" ]; then
-            echo "No changes between branch $BRANCH_NAME and main. PR will not be created for main."
-          else
-            PR_EXISTS_MAIN=$(gh pr list --base main --head $BRANCH_NAME --json number --jq '.[].number')
-
-            if [ -z "$PR_EXISTS_MAIN" ]; then
-              gh pr create --base main --head $BRANCH_NAME --title "Sync Release Main" --body "Automated PR with release updates." --label "semantic-release"
-            else
-              echo "PR already exists for this branch on main, PR number: $PR_EXISTS_MAIN"
-            fi
-          fi
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          base: main
+          branch: ${{ github.ref_name }}
+          title: "Sync release branch to main"
+          body: "Automated PR to sync release changes into main."
+          labels: "semantic-release"
+          commit-message: "chore(sync): release → main"
 
       - name: Create PR from release to staging 🚀
-        run: |
-          git config --global user.email "actions@github.com"
-          git config --global user.name "GitHub Actions"
-          git fetch origin $GITHUB_REF
-
-          echo "GITHUB_REF: $GITHUB_REF"
-
-          BRANCH_NAME=${GITHUB_REF#refs/heads/}
-
-          DIFF_STAGING=$(git diff origin/staging..origin/$BRANCH_NAME)
-
-          if [ -z "$DIFF_STAGING" ]; then
-            echo "No changes between branch $BRANCH_NAME and staging. PR will not be created for staging."
-          else
-            PR_EXISTS_STAGING=$(gh pr list --base staging --head $BRANCH_NAME --json number --jq '.[].number')
-
-            if [ -z "$PR_EXISTS_STAGING" ]; then
-              gh pr create --base staging --head $BRANCH_NAME --title "Sync Release Staging" --body "Automated PR with release updates." --label "semantic-release"
-            else
-              echo "PR already exists for this branch on staging, PR number: $PR_EXISTS_STAGING"
-            fi
-          fi
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          base: staging
+          branch: ${{ github.ref_name }}
+          title: "Sync release branch to staging"
+          body: "Automated PR to sync release changes into staging."
+          labels: "semantic-release"
+          commit-message: "chore(sync): release → staging"
