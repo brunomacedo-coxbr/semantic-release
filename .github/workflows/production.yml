@@ -43,10 +43,9 @@ jobs:
         env:
           HUSKY: 0
 
-      - name: Generate build identifier �
+      - name: Generate build identifier 🆔
         id: generate-id
         run: |
-          # Create unique build identifier using timestamp and short commit hash
           BUILD_ID="$(date +%Y%m%d%H%M%S)-${GITHUB_SHA:0:7}"
           echo "Generated build ID: $BUILD_ID"
           echo "build-id=$BUILD_ID" >> $GITHUB_OUTPUT
@@ -56,10 +55,27 @@ jobs:
         env:
           HUSKY: 0
 
+      - name: Verify build output 🔍
+        run: |
+          echo "Checking build outputs..."
+          ls -la packages/ui/ || true
+          if [ -d "packages/ui/dist" ]; then
+            echo "✅ packages/ui/dist exists"
+            ls -la packages/ui/dist/
+          else
+            echo "❌ packages/ui/dist does NOT exist"
+            echo "Available directories in packages/ui:"
+            ls -la packages/ui/
+            exit 1
+          fi
+
       - name: Create build archive 📦
         run: |
           cd packages/ui
-          # Create build archive with build ID
+          if [ ! -d "dist" ]; then
+            echo "ERROR: dist directory not found"
+            exit 1
+          fi
           tar -czf "build-${{ steps.generate-id.outputs.build-id }}.tar.gz" dist/
           ls -la build-*.tar.gz
 
@@ -74,14 +90,13 @@ jobs:
 
       - name: Deploy to Dark Prod 🚀
         run: |
-          echo "🚀 Deploying build ${{ steps.get-version.outputs.version }} to dark-prod"
+          echo "🚀 Deploying build ${{ steps.generate-id.outputs.build-id }} to dark-prod"
           echo "Artifact ID: ${{ steps.upload-build.outputs.artifact-id }}"
           # Add your actual deployment logic here
 
   deploy-green:
     name: Deploy to Green Prod 💥
-    needs:
-      - deploy-dark
+    needs: deploy-dark
     runs-on: ubuntu-latest
     environment: green-prod
     env:
@@ -93,28 +108,18 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Download build artifact �
+      - name: Download build artifact 📥
         uses: actions/download-artifact@v4
         with:
           name: build-${{ needs.deploy-dark.outputs.build-id }}
           path: ./build-artifacts
 
-      - name: Extract and prepare build �
+      - name: Extract and prepare build 📂
         run: |
           cd build-artifacts
-          # Extract the build archive
           tar -xzf build-${{ needs.deploy-dark.outputs.build-id }}.tar.gz
-
-          # List contents for debugging
-          ls -la
-
-          # Verify extraction
-          ls -la dist/
-
-          # Copy to expected location for deployment
           mkdir -p ../packages/ui/dist
           cp -r dist/* ../packages/ui/dist/
-
           echo "✅ Build extracted and prepared for deployment"
 
       - name: Deploy to Green Prod 🚀
@@ -144,6 +149,22 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Sync release branch 🔄
+        run: |
+          echo "🔄 Syncing release branch ${{ github.ref_name }}"
+          git fetch --prune --tags origin || echo "::warning::Fetch failed"
+          if git ls-remote --exit-code origin "${{ github.ref_name }}" >/dev/null 2>&1; then
+            echo "✅ Remote branch exists. Performing hard reset to origin/${{ github.ref_name }}"
+            git reset --hard "origin/${{ github.ref_name }}"
+          else
+            echo "::warning::Remote branch origin/${{ github.ref_name }} not found (may have been deleted). Proceeding with local state."
+            # Ensure we are on a branch (not detached) so later merges work
+            git checkout -B "${{ github.ref_name }}" || echo "::warning::Could not recreate local branch ${{ github.ref_name }}"
+          fi
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          echo "✅ Sync step completed"
+
       - name: Setup node 🚩
         uses: actions/setup-node@v4
         with:
@@ -166,13 +187,9 @@ jobs:
       - name: Extract build for semantic-release 📦
         run: |
           cd build-artifacts
-          # Extract build to packages/ui/dist for semantic-release
           tar -xzf build-${{ needs.deploy-dark.outputs.build-id }}.tar.gz
-
-          # Copy to expected location
           mkdir -p ../packages/ui/dist
           cp -r dist/* ../packages/ui/dist/
-
           echo "✅ Build extracted for semantic-release"
 
       - name: Release 🚀
@@ -180,13 +197,38 @@ jobs:
         run: |
           echo "Running semantic-release..."
           npx semantic-release
-
-          # Capture the released version from package.json after semantic-release
           RELEASED_VERSION=$(node -p "require('./package.json').version")
           echo "Released version: $RELEASED_VERSION"
           echo "released-version=$RELEASED_VERSION" >> $GITHUB_OUTPUT
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Cleanup transient artifacts 🧹
+        run: |
+          rm -rf build-artifacts
+          find . -maxdepth 3 -name "build-*.tar.gz" -exec rm -f {} \;
+          echo "✅ Removed transient build archives and artifacts"
+
+      - name: Push release changes 📤
+        run: |
+          git push origin ${{ github.ref_name }}
+          echo "✅ Pushed semantic-release changes to remote"
+
+      - name: Check for changes to sync 🔍
+        id: check-changes
+        run: |
+          git fetch origin main staging
+          echo "🔍 Evaluating changes restricted to CHANGELOG.md and package.json"
+
+          TARGET_PATTERN='^(CHANGELOG\.md|package\.json)$'
+
+          DIFF_MAIN=$(git diff --name-only origin/main...origin/${{ github.ref_name }} | grep -E "$TARGET_PATTERN" | wc -l || true)
+          echo "diff-main=$DIFF_MAIN" >> $GITHUB_OUTPUT
+          echo "📊 Target file diffs vs main: $DIFF_MAIN"
+
+          DIFF_STAGING=$(git diff --name-only origin/staging...origin/${{ github.ref_name }} | grep -E "$TARGET_PATTERN" | wc -l || true)
+          echo "diff-staging=$DIFF_STAGING" >> $GITHUB_OUTPUT
+          echo "📊 Target file diffs vs staging: $DIFF_STAGING"
 
       - name: Create versioned build artifact 🎯
         uses: actions/upload-artifact@v4
@@ -196,54 +238,153 @@ jobs:
           retention-days: 90
           compression-level: 9
 
-      - name: Create PR from release to main 🚀
+      - name: Generate GitHub App token 🔐
+        id: app_token
+        uses: tibdex/github-app-token@v2
+        with:
+          app_id: ${{ secrets.APP_ID }}
+          private_key: ${{ secrets.APP_PRIVATE_KEY }}
+
+      - name: Checkout main for PR 🔄
+        if: steps.check-changes.outputs.diff-main > 0
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          token: ${{ steps.app_token.outputs.token || secrets.GITHUB_TOKEN }}
+
+      - name: Stage release changes for main 📝
+        if: steps.check-changes.outputs.diff-main > 0
         run: |
-          git config --global user.email "actions@github.com"
-          git config --global user.name "GitHub Actions"
-          git fetch origin $GITHUB_REF
-
-          echo "GITHUB_REF: $GITHUB_REF"
-
-          BRANCH_NAME=${GITHUB_REF#refs/heads/}
-
-          DIFF_MAIN=$(git diff origin/main..origin/$BRANCH_NAME)
-
-          if [ -z "$DIFF_MAIN" ]; then
-            echo "No changes between branch $BRANCH_NAME and main. PR will not be created for main."
-          else
-            PR_EXISTS_MAIN=$(gh pr list --base main --head $BRANCH_NAME --json number --jq '.[].number')
-
-            if [ -z "$PR_EXISTS_MAIN" ]; then
-              gh pr create --base main --head $BRANCH_NAME --title "Sync Release Main" --body "Automated PR with release updates." --label "semantic-release"
-            else
-              echo "PR already exists for this branch on main, PR number: $PR_EXISTS_MAIN"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          echo "🔍 Collecting target file changes (CHANGELOG.md, package.json) between main and ${{ github.ref_name }}"
+          git fetch origin ${{ github.ref_name }}
+          TARGET_FILES="CHANGELOG.md package.json"
+          CHANGED_ANY=0
+          for f in $TARGET_FILES; do
+            if git diff --name-only origin/main...origin/${{ github.ref_name }} | grep -qx "$f"; then
+              echo "⤵️ Bringing $f from release branch"
+              git checkout origin/${{ github.ref_name }} -- "$f" || echo "::warning::Failed to checkout $f"
+              CHANGED_ANY=1
             fi
-          fi
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          done
+          if [ "$CHANGED_ANY" -eq 0 ]; then
+            echo "::notice::No target file changes for main PR"; exit 0; fi
+          echo "✅ Staged target files for main PR"
 
-      - name: Create PR from release to staging 🚀
+      - name: Create PR to main 🚀
+        if: steps.check-changes.outputs.diff-main > 0
+        id: pr-main
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ steps.app_token.outputs.token || secrets.GITHUB_TOKEN }}
+          base: main
+          branch: sync-release-to-main-${{ github.run_number }}
+          commit-message: "chore(sync): release → main"
+          title: "Sync release branch to main"
+          body: |
+            ## 🔄 Automated Release Sync
+
+            This PR syncs changes from `${{ github.ref_name }}` to `main`.
+
+            **Release Info:**
+            - Source Branch: `${{ github.ref_name }}`
+            - Workflow Run: #${{ github.run_number }}
+            - Triggered by: @${{ github.actor }}
+
+            ---
+            Auto-generated by [create-pull-request](https://github.com/peter-evans/create-pull-request)
+          labels: semantic-release,automated
+          add-paths: |
+            CHANGELOG.md
+            package.json
+          delete-branch: true
+
+      - name: Skip PR to main (no changes) ℹ️
+        if: steps.check-changes.outputs.diff-main == 0
+        run: echo "::notice::No changes to sync to main branch"
+
+      - name: Checkout staging for PR 🔄
+        if: steps.check-changes.outputs.diff-staging > 0
+        uses: actions/checkout@v4
+        with:
+          ref: staging
+          fetch-depth: 0
+          token: ${{ steps.app_token.outputs.token || secrets.GITHUB_TOKEN }}
+
+      - name: Stage release changes for staging 📝
+        if: steps.check-changes.outputs.diff-staging > 0
         run: |
-          git config --global user.email "actions@github.com"
-          git config --global user.name "GitHub Actions"
-          git fetch origin $GITHUB_REF
-
-          echo "GITHUB_REF: $GITHUB_REF"
-
-          BRANCH_NAME=${GITHUB_REF#refs/heads/}
-
-          DIFF_STAGING=$(git diff origin/staging..origin/$BRANCH_NAME)
-
-          if [ -z "$DIFF_STAGING" ]; then
-            echo "No changes between branch $BRANCH_NAME and staging. PR will not be created for staging."
-          else
-            PR_EXISTS_STAGING=$(gh pr list --base staging --head $BRANCH_NAME --json number --jq '.[].number')
-
-            if [ -z "$PR_EXISTS_STAGING" ]; then
-              gh pr create --base staging --head $BRANCH_NAME --title "Sync Release Staging" --body "Automated PR with release updates." --label "semantic-release"
-            else
-              echo "PR already exists for this branch on staging, PR number: $PR_EXISTS_STAGING"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          echo "🔍 Collecting target file changes (CHANGELOG.md, package.json) between staging and ${{ github.ref_name }}"
+          git fetch origin ${{ github.ref_name }}
+          TARGET_FILES="CHANGELOG.md package.json"
+          CHANGED_ANY=0
+          for f in $TARGET_FILES; do
+            if git diff --name-only origin/staging...origin/${{ github.ref_name }} | grep -qx "$f"; then
+              echo "⤵️ Bringing $f from release branch"
+              git checkout origin/${{ github.ref_name }} -- "$f" || echo "::warning::Failed to checkout $f"
+              CHANGED_ANY=1
             fi
+          done
+          if [ "$CHANGED_ANY" -eq 0 ]; then
+            echo "::notice::No target file changes for staging PR"; exit 0; fi
+          echo "✅ Staged target files for staging PR"
+
+      - name: Create PR to staging 🚀
+        if: steps.check-changes.outputs.diff-staging > 0
+        id: pr-staging
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ steps.app_token.outputs.token || secrets.GITHUB_TOKEN }}
+          base: staging
+          branch: sync-release-to-staging-${{ github.run_number }}
+          commit-message: "chore(sync): release → staging"
+          title: "Sync release branch to staging"
+          body: |
+            ## 🔄 Automated Release Sync
+
+            This PR syncs changes from `${{ github.ref_name }}` to `staging`.
+
+            **Release Info:**
+            - Source Branch: `${{ github.ref_name }}`
+            - Workflow Run: #${{ github.run_number }}
+            - Triggered by: @${{ github.actor }}
+
+            ---
+            Auto-generated by [create-pull-request](https://github.com/peter-evans/create-pull-request)
+          labels: semantic-release,automated
+          add-paths: |
+            CHANGELOG.md
+            package.json
+          delete-branch: true
+
+      - name: Skip PR to staging (no changes) ℹ️
+        if: steps.check-changes.outputs.diff-staging == 0
+        run: echo "::notice::No changes to sync to staging branch"
+
+      - name: Delete release branch 🗑️
+        if: always()
+        run: |
+          echo "🗑️ Evaluating deletion for source release branch: ${{ github.ref_name }}"
+          # Determine if at least one PR was attempted successfully
+          PR_MAIN_OUTCOME="${{ steps.pr-main.outcome || 'none' }}"
+          PR_STAGING_OUTCOME="${{ steps.pr-staging.outcome || 'none' }}"
+          echo "Outcome main PR: $PR_MAIN_OUTCOME"
+          echo "Outcome staging PR: $PR_STAGING_OUTCOME"
+          SHOULD_DELETE=0
+          if [ "$PR_MAIN_OUTCOME" = "success" ] || [ "$PR_STAGING_OUTCOME" = "success" ]; then
+            SHOULD_DELETE=1
           fi
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          if git ls-remote --exit-code origin "${{ github.ref_name }}" >/dev/null 2>&1; then
+            if [ "$SHOULD_DELETE" = "1" ]; then
+              echo "Deleting remote branch origin/${{ github.ref_name }}"
+              git push origin --delete "${{ github.ref_name }}" || echo "::warning::Failed to delete branch ${ { github.ref_name }}"
+            else
+              echo "::notice::Skipping deletion: no successful PR was created."
+            fi
+          else
+            echo "::notice::Branch origin/${{ github.ref_name }} already absent. Nothing to delete."
+          fi
