@@ -1,11 +1,11 @@
-name: List Available Rollback Versions
+name: List Available Versions
 
 on:
   workflow_dispatch:
 
 jobs:
   list-versions:
-    name: List Available Rollback Versions 📋
+    name: Versions 📋
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository 🛎️
