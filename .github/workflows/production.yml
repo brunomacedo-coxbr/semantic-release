@@ -201,18 +201,23 @@ jobs:
           find . -maxdepth 3 -name "build-*.tar.gz" -exec rm -f {} \;
           echo "✅ Removed transient build archives and artifacts"
 
+      - name: Push release changes 📤
+        run: |
+          git push origin ${{ github.ref_name }}
+          echo "✅ Pushed semantic-release changes to remote"
+
       - name: Check for changes to sync 🔍
         id: check-changes
         run: |
           git fetch origin main staging
 
           # Check if there are differences between release branch and main
-          DIFF_MAIN=$(git diff origin/main..HEAD --name-only | wc -l)
+          DIFF_MAIN=$(git diff origin/main...origin/${{ github.ref_name }} --name-only | wc -l)
           echo "diff-main=$DIFF_MAIN" >> $GITHUB_OUTPUT
           echo "📊 Files different from main: $DIFF_MAIN"
 
           # Check if there are differences between release branch and staging
-          DIFF_STAGING=$(git diff origin/staging..HEAD --name-only | wc -l)
+          DIFF_STAGING=$(git diff origin/staging...origin/${{ github.ref_name }} --name-only | wc -l)
           echo "diff-staging=$DIFF_STAGING" >> $GITHUB_OUTPUT
           echo "📊 Files different from staging: $DIFF_STAGING"
 
@@ -288,3 +293,9 @@ jobs:
       - name: Skip PR to staging (no changes) ℹ️
         if: steps.check-changes.outputs.diff-staging == 0
         run: echo "::notice::No changes to sync to staging branch"
+
+      - name: Delete release branch 🗑️
+        if: always()
+        run: |
+          echo "Deleting source release branch: ${{ github.ref_name }}"
+          git push origin --delete ${{ github.ref_name }} || echo "::warning::Failed to delete branch ${{ github.ref_name }}"
