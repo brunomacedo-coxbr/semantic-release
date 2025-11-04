@@ -3,31 +3,20 @@
 
 ### Bug Fixes
 
+* code structure for improved readability ([dad9c7c](https://github.com/brunomacedo-coxbr/semantic-release/commit/dad9c7ce16101d459d1c83252ea643bca1865c54))
 * remove outdated build artifact ([e430aa1](https://github.com/brunomacedo-coxbr/semantic-release/commit/e430aa11cf9373d2077f4aaeadd7fe1b7eecbcbc))
-* update deployment workflow steps ([149e964](https://github.com/brunomacedo-coxbr/semantic-release/commit/149e96471787c5e47201cff1954293a6b198e643))
-* update sync process for release branch to include main and staging ([455bae7](https://github.com/brunomacedo-coxbr/semantic-release/commit/455bae7f00a28d9f8c8f7f8c41bcffcab524a844))
-
-
-### Features
-
-* add sync step for release branch remove build artifacts ([d472bad](https://github.com/brunomacedo-coxbr/semantic-release/commit/d472bad9a276e99d4f7d73c094516f7d3b747fc2))
-* automated checks and PR creation for syncing release ([f7c0f19](https://github.com/brunomacedo-coxbr/semantic-release/commit/f7c0f19772cac914892d57620b5b15f7bc178c57))
-* **PR:** simplify creation release with peter-evans ([16376c4](https://github.com/brunomacedo-coxbr/semantic-release/commit/16376c4bf06a5b7203f7aeb250ff261d2783f544))
-
-# [2.14.0](https://github.com/brunomacedo-coxbr/semantic-release/compare/v2.13.0...v2.14.0) (2025-11-04)
-
-
-### Bug Fixes
-
-* remove outdated build artifact ([e430aa1](https://github.com/brunomacedo-coxbr/semantic-release/commit/e430aa11cf9373d2077f4aaeadd7fe1b7eecbcbc))
+* update @radix-ui/react-slot dependency to version 1.2.4 ([c7db0d6](https://github.com/brunomacedo-coxbr/semantic-release/commit/c7db0d61339098d0440041cb7a85d5b008077f95))
 * update deployment workflow steps ([149e964](https://github.com/brunomacedo-coxbr/semantic-release/commit/149e96471787c5e47201cff1954293a6b198e643))
 
 
 ### Features
 
+* add build and testing scripts to package.json ([eedd153](https://github.com/brunomacedo-coxbr/semantic-release/commit/eedd1534d5595a763c926033be3d940645c33cae))
 * add sync step for release branch remove build artifacts ([d472bad](https://github.com/brunomacedo-coxbr/semantic-release/commit/d472bad9a276e99d4f7d73c094516f7d3b747fc2))
 * automated checks and PR creation for syncing release ([f7c0f19](https://github.com/brunomacedo-coxbr/semantic-release/commit/f7c0f19772cac914892d57620b5b15f7bc178c57))
+* enhance deployment workflow with build verification and cleanup steps ([626edef](https://github.com/brunomacedo-coxbr/semantic-release/commit/626edefb21d407fb5096d74738d02481e681fb07))
 * **PR:** simplify creation release with peter-evans ([16376c4](https://github.com/brunomacedo-coxbr/semantic-release/commit/16376c4bf06a5b7203f7aeb250ff261d2783f544))
+* sync step for release branch ([8fec987](https://github.com/brunomacedo-coxbr/semantic-release/commit/8fec987f3502793b2e307745c15686a01f7aec01))
 
 # [2.13.0](https://github.com/brunomacedo-coxbr/semantic-release/compare/v2.12.0...v2.13.0) (2025-10-27)
 
