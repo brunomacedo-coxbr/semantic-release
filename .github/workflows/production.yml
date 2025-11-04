@@ -55,9 +55,27 @@ jobs:
         env:
           HUSKY: 0
 
+      - name: Verify build output 🔍
+        run: |
+          echo "Checking build outputs..."
+          ls -la packages/ui/ || true
+          if [ -d "packages/ui/dist" ]; then
+            echo "✅ packages/ui/dist exists"
+            ls -la packages/ui/dist/
+          else
+            echo "❌ packages/ui/dist does NOT exist"
+            echo "Available directories in packages/ui:"
+            ls -la packages/ui/
+            exit 1
+          fi
+
       - name: Create build archive 📦
         run: |
           cd packages/ui
+          if [ ! -d "dist" ]; then
+            echo "ERROR: dist directory not found"
+            exit 1
+          fi
           tar -czf "build-${{ steps.generate-id.outputs.build-id }}.tar.gz" dist/
           ls -la build-*.tar.gz
 
@@ -131,6 +149,14 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Sync release branch 🔄
+        run: |
+          git fetch --prune --tags origin
+          git reset --hard origin/${{ github.ref_name }}
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          echo "✅ Release branch synchronized with remote"
+
       - name: Setup node 🚩
         uses: actions/setup-node@v4
         with:
@@ -169,12 +195,16 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Cleanup transient artifacts 🧹
+        run: |
+          rm -rf build-artifacts
+          find . -maxdepth 3 -name "build-*.tar.gz" -exec rm -f {} \;
+          echo "✅ Removed transient build archives and artifacts"
+
       - name: Check for changes to sync 🔍
         id: check-changes
         run: |
-          git config --global user.email "actions@github.com"
-          git config --global user.name "GitHub Actions"
-          git fetch origin $GITHUB_REF main staging
+          git fetch origin main staging
 
           # Check if there are differences between release branch and main
           DIFF_MAIN=$(git diff origin/main..HEAD --name-only | wc -l)
@@ -200,12 +230,6 @@ jobs:
         with:
           app_id: ${{ secrets.APP_ID }}
           private_key: ${{ secrets.APP_PRIVATE_KEY }}
-
-      - name: Sync release branch 🔄
-        run: |
-          git config --global user.email "actions@github.com"
-          git config --global user.name "GitHub Actions"
-          git fetch origin $GITHUB_REF
 
       - name: Create PR from release to main 🚀
         if: steps.check-changes.outputs.diff-main > 0
