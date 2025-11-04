@@ -43,10 +43,9 @@ jobs:
         env:
           HUSKY: 0
 
-      - name: Generate build identifier �
+      - name: Generate build identifier 🆔
         id: generate-id
         run: |
-          # Create unique build identifier using timestamp and short commit hash
           BUILD_ID="$(date +%Y%m%d%H%M%S)-${GITHUB_SHA:0:7}"
           echo "Generated build ID: $BUILD_ID"
           echo "build-id=$BUILD_ID" >> $GITHUB_OUTPUT
@@ -59,7 +58,6 @@ jobs:
       - name: Create build archive 📦
         run: |
           cd packages/ui
-          # Create build archive with build ID
           tar -czf "build-${{ steps.generate-id.outputs.build-id }}.tar.gz" dist/
           ls -la build-*.tar.gz
 
@@ -74,14 +72,13 @@ jobs:
 
       - name: Deploy to Dark Prod 🚀
         run: |
-          echo "🚀 Deploying build ${{ steps.get-version.outputs.version }} to dark-prod"
+          echo "🚀 Deploying build ${{ steps.generate-id.outputs.build-id }} to dark-prod"
           echo "Artifact ID: ${{ steps.upload-build.outputs.artifact-id }}"
           # Add your actual deployment logic here
 
   deploy-green:
     name: Deploy to Green Prod 💥
-    needs:
-      - deploy-dark
+    needs: deploy-dark
     runs-on: ubuntu-latest
     environment: green-prod
     env:
@@ -93,28 +90,18 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Download build artifact �
+      - name: Download build artifact 📥
         uses: actions/download-artifact@v4
         with:
           name: build-${{ needs.deploy-dark.outputs.build-id }}
           path: ./build-artifacts
 
-      - name: Extract and prepare build �
+      - name: Extract and prepare build 📂
         run: |
           cd build-artifacts
-          # Extract the build archive
           tar -xzf build-${{ needs.deploy-dark.outputs.build-id }}.tar.gz
-
-          # List contents for debugging
-          ls -la
-
-          # Verify extraction
-          ls -la dist/
-
-          # Copy to expected location for deployment
           mkdir -p ../packages/ui/dist
           cp -r dist/* ../packages/ui/dist/
-
           echo "✅ Build extracted and prepared for deployment"
 
       - name: Deploy to Green Prod 🚀
@@ -166,13 +153,9 @@ jobs:
       - name: Extract build for semantic-release 📦
         run: |
           cd build-artifacts
-          # Extract build to packages/ui/dist for semantic-release
           tar -xzf build-${{ needs.deploy-dark.outputs.build-id }}.tar.gz
-
-          # Copy to expected location
           mkdir -p ../packages/ui/dist
           cp -r dist/* ../packages/ui/dist/
-
           echo "✅ Build extracted for semantic-release"
 
       - name: Release 🚀
@@ -180,8 +163,6 @@ jobs:
         run: |
           echo "Running semantic-release..."
           npx semantic-release
-
-          # Capture the released version from package.json after semantic-release
           RELEASED_VERSION=$(node -p "require('./package.json').version")
           echo "Released version: $RELEASED_VERSION"
           echo "released-version=$RELEASED_VERSION" >> $GITHUB_OUTPUT
@@ -196,10 +177,17 @@ jobs:
           retention-days: 90
           compression-level: 9
 
+      - name: Generate GitHub App token 🔐
+        id: app_token
+        uses: tibdex/github-app-token@v2
+        with:
+          app_id: ${{ secrets.APP_ID }}
+          private_key: ${{ secrets.APP_PRIVATE_KEY }}
+
       - name: Create PR from release to main 🚀
         uses: peter-evans/create-pull-request@v6
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ steps.app_token.outputs.token || secrets.GITHUB_TOKEN }}
           base: main
           branch: ${{ github.ref_name }}
           title: "Sync release branch to main"
@@ -210,7 +198,7 @@ jobs:
       - name: Create PR from release to staging 🚀
         uses: peter-evans/create-pull-request@v6
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ steps.app_token.outputs.token || secrets.GITHUB_TOKEN }}
           base: staging
           branch: ${{ github.ref_name }}
           title: "Sync release branch to staging"
