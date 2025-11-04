@@ -4,7 +4,7 @@
     "./styles.css": "./globals.css"
   },
   "dependencies": {
-    "@tailwindcss/vite": "^4.1.12",
-    "tailwindcss": "^4.1.12"
+    "@tailwindcss/vite": "^4.1.16",
+    "tailwindcss": "^4.1.16"
   }
 }
