@@ -236,7 +236,24 @@ jobs:
           app_id: ${{ secrets.APP_ID }}
           private_key: ${{ secrets.APP_PRIVATE_KEY }}
 
-      - name: Create PR from release to main 🚀
+      - name: Checkout main for PR 🔄
+        if: steps.check-changes.outputs.diff-main > 0
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          token: ${{ steps.app_token.outputs.token || secrets.GITHUB_TOKEN }}
+
+      - name: Apply release changes to main 📝
+        if: steps.check-changes.outputs.diff-main > 0
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin ${{ github.ref_name }}
+          git checkout -b sync-release-to-main-${{ github.run_number }}
+          git merge --no-ff origin/${{ github.ref_name }} -m "chore(sync): merge ${{ github.ref_name }} into main"
+
+      - name: Create PR to main 🚀
         if: steps.check-changes.outputs.diff-main > 0
         id: pr-main
         uses: peter-evans/create-pull-request@v6
@@ -265,7 +282,24 @@ jobs:
         if: steps.check-changes.outputs.diff-main == 0
         run: echo "::notice::No changes to sync to main branch"
 
-      - name: Create PR from release to staging 🚀
+      - name: Checkout staging for PR 🔄
+        if: steps.check-changes.outputs.diff-staging > 0
+        uses: actions/checkout@v4
+        with:
+          ref: staging
+          fetch-depth: 0
+          token: ${{ steps.app_token.outputs.token || secrets.GITHUB_TOKEN }}
+
+      - name: Apply release changes to staging 📝
+        if: steps.check-changes.outputs.diff-staging > 0
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin ${{ github.ref_name }}
+          git checkout -b sync-release-to-staging-${{ github.run_number }}
+          git merge --no-ff origin/${{ github.ref_name }} -m "chore(sync): merge ${{ github.ref_name }} into staging"
+
+      - name: Create PR to staging 🚀
         if: steps.check-changes.outputs.diff-staging > 0
         id: pr-staging
         uses: peter-evans/create-pull-request@v6
