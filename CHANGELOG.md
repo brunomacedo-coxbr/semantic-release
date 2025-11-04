@@ -1,3 +1,13 @@
+# [2.15.0](https://github.com/brunomacedo-coxbr/semantic-release/compare/v2.14.0...v2.15.0) (2025-11-04)
+
+
+### Features
+
+* add push and delete branch steps to release workflow ([26c2f64](https://github.com/brunomacedo-coxbr/semantic-release/commit/26c2f6444c8e961e46192fd51b92f641d157fc1e))
+* add steps to sync release changes to main and staging branches ([f46c6b5](https://github.com/brunomacedo-coxbr/semantic-release/commit/f46c6b508b04672a4d046e7aa3737596797d26a7))
+* enhance sync and deletion logic for release branches in production workflow ([e0ef041](https://github.com/brunomacedo-coxbr/semantic-release/commit/e0ef0410d0267ff8bd392b3aa9eb292d28875623))
+* refine change detection for release branches and streamline PR creation for main and staging ([37ccbb8](https://github.com/brunomacedo-coxbr/semantic-release/commit/37ccbb8bec0ad9852a66a7919993132c68c839b8))
+
 # [2.14.0](https://github.com/brunomacedo-coxbr/semantic-release/compare/v2.13.0...v2.14.0) (2025-11-04)
 
 
