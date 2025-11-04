@@ -1,3 +1,10 @@
+# [2.15.0](https://github.com/brunomacedo-coxbr/semantic-release/compare/v2.14.0...v2.15.0) (2025-11-04)
+
+
+### Features
+
+* add push and delete branch steps to release workflow ([26c2f64](https://github.com/brunomacedo-coxbr/semantic-release/commit/26c2f6444c8e961e46192fd51b92f641d157fc1e))
+
 # [2.14.0](https://github.com/brunomacedo-coxbr/semantic-release/compare/v2.13.0...v2.14.0) (2025-11-04)
 
 
