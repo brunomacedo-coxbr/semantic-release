@@ -48,6 +48,10 @@ public/dist
 storybook-static
 *.tgz
 
+# Build artifacts from CI/CD
+build-artifacts/
+*.tar.gz
+
 # React
 .eslintcache
 *.cache/
