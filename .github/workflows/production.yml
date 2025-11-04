@@ -151,11 +151,19 @@ jobs:
 
       - name: Sync release branch 🔄
         run: |
-          git fetch --prune --tags origin
-          git reset --hard origin/${{ github.ref_name }}
+          echo "🔄 Syncing release branch ${{ github.ref_name }}"
+          git fetch --prune --tags origin || echo "::warning::Fetch failed"
+          if git ls-remote --exit-code origin "${{ github.ref_name }}" >/dev/null 2>&1; then
+            echo "✅ Remote branch exists. Performing hard reset to origin/${{ github.ref_name }}"
+            git reset --hard "origin/${{ github.ref_name }}"
+          else
+            echo "::warning::Remote branch origin/${{ github.ref_name }} not found (may have been deleted). Proceeding with local state."
+            # Ensure we are on a branch (not detached) so later merges work
+            git checkout -B "${{ github.ref_name }}" || echo "::warning::Could not recreate local branch ${{ github.ref_name }}"
+          fi
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          echo "✅ Release branch synchronized with remote"
+          echo "✅ Sync step completed"
 
       - name: Setup node 🚩
         uses: actions/setup-node@v4
@@ -331,5 +339,23 @@ jobs:
       - name: Delete release branch 🗑️
         if: always()
         run: |
-          echo "Deleting source release branch: ${{ github.ref_name }}"
-          git push origin --delete ${{ github.ref_name }} || echo "::warning::Failed to delete branch ${{ github.ref_name }}"
+          echo "🗑️ Evaluating deletion for source release branch: ${{ github.ref_name }}"
+          # Determine if at least one PR was attempted successfully
+          PR_MAIN_OUTCOME="${{ steps.pr-main.outcome || 'none' }}"
+          PR_STAGING_OUTCOME="${{ steps.pr-staging.outcome || 'none' }}"
+          echo "Outcome main PR: $PR_MAIN_OUTCOME"
+          echo "Outcome staging PR: $PR_STAGING_OUTCOME"
+          SHOULD_DELETE=0
+          if [ "$PR_MAIN_OUTCOME" = "success" ] || [ "$PR_STAGING_OUTCOME" = "success" ]; then
+            SHOULD_DELETE=1
+          fi
+          if git ls-remote --exit-code origin "${{ github.ref_name }}" >/dev/null 2>&1; then
+            if [ "$SHOULD_DELETE" = "1" ]; then
+              echo "Deleting remote branch origin/${{ github.ref_name }}"
+              git push origin --delete "${{ github.ref_name }}" || echo "::warning::Failed to delete branch ${ { github.ref_name }}"
+            else
+              echo "::notice::Skipping deletion: no successful PR was created."
+            fi
+          else
+            echo "::notice::Branch origin/${{ github.ref_name }} already absent. Nothing to delete."
+          fi
